@@ -111,3 +111,7 @@ void * CSV_Parser::GetValues(const String & key) {
       return dict[i]->values;
   return (void*)0;
 }
+
+void * CSV_Parser::operator [] (const char *key) {
+  return GetValues(key);
+}

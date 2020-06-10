@@ -24,6 +24,8 @@ public:
   int GetColumnsCount();
   int GetRowsCount(); // excluding header
   void * GetValues(const String & key);    
+
+  void * operator [] (const char *key);
 };
 
 #endif
