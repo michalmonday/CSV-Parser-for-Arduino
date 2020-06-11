@@ -9,8 +9,6 @@ struct Dict {
   int values_count;
   char type;
   
-  int header_index; // in csv file 
-  
   Dict(const char * k, int vc, int t, int single_value_size) 
     :
       key(strdup(k)), 
@@ -32,7 +30,6 @@ struct Dict {
 
 class CSV_Parser {
     Dict **dict;
-    int dict_size;
     int rows_count, cols_count;
 
     static String GetTypeName(char c);
@@ -54,13 +51,12 @@ public:
   int GetColumnsCount();
   int GetRowsCount(); // excluding header
   
-  void * GetValues(const String & key);    
+  void * GetValues(const char * key);    
   void * GetValues(int index);  
   void * operator [] (const char *key);
   void * operator [] (int index);
   
   operator String ();
-
   void Print();
 };
 

@@ -107,5 +107,8 @@ It will display parsed header fields, their types and all the parsed values. Lik
 >      noice | 90000 | 160 | 30 | 9.99 | FFFFFF | -  
 
   
-# Tested with 
-- Esp8266  
+# Testing
+It was tested with Esp8266.  
+`ESP.getFreeHeap()` function was used to check for possible memory leak. I also examined how memory space efficient it is.  
+
+
