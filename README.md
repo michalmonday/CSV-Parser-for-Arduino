@@ -61,7 +61,7 @@ Example above is specifying "s" (string) for the 1st column, and "f" (float) for
 L - long (32-bit signed value)  
 f - float  
 s - string (C-like string, not a "String" Arduino object, just a char pointer, terminated by 0)  
-d - int (16-bit signed value, can't be used for values over 65535)  
+d - int (16-bit signed value, can't be used for values over 32767)  
 c - char (8-bit signed value, can't be used for values over 127)  
 x - hex (stored as long)  
 "-" (dash character) means that value is unused/not-parsed (this way memory won't be allocated for values from that column)  
