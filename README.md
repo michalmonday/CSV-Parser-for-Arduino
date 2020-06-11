@@ -22,7 +22,7 @@ s - string (C-like string, not a "String" Arduino object, just a char pointer, t
 d - int (16-bit signed value, can't be used for values over 65535)  
 c - char (8-bit signed value, can't be used for values over 127)  
 x - hex (stored as long)  
-- - unused (this way memory won't be allocated for the values)  
+"-" (dash character) means that value is unused/not-parsed (this way memory won't be allocated for values from that column)  
 
 # How to cast returned values appropriately
 By casting to the corresponding format specifier. Let's suppose that we parse the following:
