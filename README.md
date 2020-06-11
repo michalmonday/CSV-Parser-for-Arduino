@@ -72,16 +72,6 @@ Serial.print(longs_from_hex[i], HEX); Serial.println();
 ```
 
 Output:  
-> CSV_Parser:  
->   header fields:  
->     my_strings (char*)  
->     my_longs (long)  
->     my_ints (int)  
->     my_chars (char)  
->     my_floats (float)  
->     my_hex (hex (long))  
->     my_to_be_ignored (unused)  
->   rows number = 3  
 > hello - 70000 - 140 - 10 - 3.33 - FF0000  
 > world - 80000 - 150 - 20 - 7.77 - FF  
 > noice - 90000 - 160 - 20 - 9.99 - FFFFFF   
