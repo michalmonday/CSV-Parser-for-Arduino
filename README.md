@@ -109,6 +109,10 @@ It will display parsed header fields, their types and all the parsed values. Lik
   
 # Testing
 It was tested with Esp8266.  
-`ESP.getFreeHeap()` function was used to check for possible memory leak. I also examined how memory space efficient it is.  
+`ESP.getFreeHeap()` function was used to check for possible memory leak. 
+
+# To do
+Examine how memory space efficient it is.  
+Check how much space it takes.  
 
 
