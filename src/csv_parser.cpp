@@ -1,10 +1,14 @@
 #include "csv_parser.h"
 
-int CountCharInStr(const String &s, const char c) {
+int CountCharInStr(const char * s, const char c, int size_limit=0) {
   int count = 0;
-  for (const char &c2 : s)
-    if (c2 == c)
+  for (int i = 0; i < strlen(s); i++) {
+    if (s[i] == c)
       count++;
+      
+    if (size_limit && i == size_limit)
+      break;
+  }
   return count;
 }
 
@@ -12,27 +16,29 @@ int CountCharInStr(const String &s, const char c) {
 
   
 
-CSV_Parser::CSV_Parser(String s, const char * fmt, bool has_header) 
+CSV_Parser::CSV_Parser(const char * s, const char * fmt, bool has_header) 
   : 
   dict(0),
   dict_size(0)
 {
-
-  cols_count = CountCharInStr(s.substring(0, s.indexOf('\n')), ',') + 1;
-  rows_count = CountCharInStr(s, '\n') - s.endsWith("\n") + 1 - has_header; // exclude header if it's present
+  cols_count = CountCharInStr(s, ',', strcspn(s, "\n")) + 1;
+  rows_count = CountCharInStr(s, '\n') - (s[strlen(s)-1] == '\n') + 1 - has_header; // exclude header if it's present
   
   dict = (Dict**)malloc(cols_count * sizeof(Dict*));
 
+  Serial.println("Free heap (CSV_Parser constructor) = " + String(ESP.getFreeHeap())); 
+
   for (int header_index = 0; header_index < strlen(fmt); header_index++) {
+      char * key;
+      int key_len = strcspn(s, "\n,");
       
-      String key;
       if (has_header) {
-        int key_len = strcspn(s.c_str(), "\n,");
-        key = s.substring(0, key_len);
-        s.remove(0, key_len + 1); 
+        key = strndup(s, key_len);
       } else {
-        key = "col_" + String(header_index);
+        key = (char*)malloc(12);
+        sprintf(key, "col_%d", header_index);
       }
+      s += key_len + 1; 
 
       int single_value_size;
       switch (fmt[header_index]) {
@@ -49,42 +55,43 @@ CSV_Parser::CSV_Parser(String s, const char * fmt, bool has_header)
            
       dict[dict_size] = new Dict(key, rows_count, fmt[header_index], single_value_size);
       dict_size++;
+      free(key);
   }    
 
   for (int row = 0; row < rows_count; row++) {
     for (int header_index = 0; header_index < strlen(fmt); header_index++) {
-      int val_len = strcspn(s.c_str(), "\n,");
-      String val = s.substring(0, val_len);
+      int val_len = strcspn(s, "\n,");
+      char * val = strndup(s, val_len);
 
       switch (fmt[header_index]) {
         case 'L': {
-          *((long*)dict[header_index]->values + row) = atol(val.c_str());
+          *((long*)dict[header_index]->values + row) = atol(val);
           break;
           }
         case 'f': {
-          *((float*)dict[header_index]->values + row) = val.toFloat();
+          *((float*)dict[header_index]->values + row) = (float)atof(val);
           break;
         }
         case 's': {
-          *((char**)dict[header_index]->values + row) = strdup(val.c_str());
+          *((char**)dict[header_index]->values + row) = strdup(val);
           break;
         }
         case 'd': {
-          *((int*)dict[header_index]->values + row) = val.toInt();
+          *((int*)dict[header_index]->values + row) = atoi(val);
           break;
         }
         case 'c': {
-          *((char*)dict[header_index]->values + row) = (char)val.toInt();
+          *((char*)dict[header_index]->values + row) = (char)atoi(val);
           break;
         }
         case 'x': {
-          *((long*)dict[header_index]->values + row) = strtol(val.c_str(), 0, 16); // hex input is stored as long
+          *((long*)dict[header_index]->values + row) = strtol(val, 0, 16); // hex input is stored as long
           break;
         }
         case '-': break;
       }
-      
-      s.remove(0, val_len + 1);
+      s += val_len + 1;
+      free(val);
     }
   }
 }
@@ -144,7 +151,7 @@ void CSV_Parser::Print() {
   Serial.print("      ");
   for (int i = 0; i < dict_size; i++) { 
     Serial.print(dict[i]->key); if(i == dict_size - 1) { continue; }
-    Serial.print(" - ");
+    Serial.print(" | ");
   }
   Serial.println();
 
@@ -152,7 +159,7 @@ void CSV_Parser::Print() {
   Serial.print("      ");
   for (int i = 0; i < dict_size; i++) {
     Serial.print(GetTypeName(dict[i]->type)); if(i == dict_size - 1) { continue; }
-    Serial.print(" - ");
+    Serial.print(" | ");
   }
   Serial.println();
   
@@ -170,7 +177,7 @@ void CSV_Parser::Print() {
           case '-': Serial.print('-'); break;
       }
       if(j == dict_size - 1) { continue; }
-      Serial.print(" - ");
+      Serial.print(" | ");
     }
     Serial.println();
   }

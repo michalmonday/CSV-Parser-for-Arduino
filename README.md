@@ -51,7 +51,7 @@ The part of the code to parse it:
 
 ```cpp
 static const String csv = "my_strings,my_longs,my_ints,my_chars,my_floats,my_hex,my_to_be_ignored\nhello,70000,140,10,3.33,FF0000,this_value_wont_be_stored\nworld,80000,150,20,7.77,0000FF,this_value_wont_be_stored\nnoice,90000,160,30,9.99,FFFFFF,this_value_wont_be_stored";
-CSV_Parser cp(/*csv*/ csv, /*format*/ "sLdcfx-");
+CSV_Parser cp(/*csv*/ csv.c_str(), /*format*/ "sLdcfx-");
 Serial.println(cp);
 
 char  **strings =       (char**)cp["my_strings"];
@@ -95,7 +95,17 @@ CSV_Parser cp(/*csv*/ csv, /*format*/ "---L");
 cp.Print();
 ```
 
-It will display parsed header fields, their types and all the parsed values.  
+It will display parsed header fields, their types and all the parsed values. Like this:  
+> CSV_Parser content:  
+>   Header:  
+>      my_strings | my_longs | my_ints | my_chars | my_floats | my_hex | my_to_be_ignored  
+>   Types:  
+>      char* | long | int | char | float | hex (long) | unused  
+>   Values:  
+>      hello | 70000 | 140 | 10 | 3.33 | FF0000 | -   
+>      world | 80000 | 150 | 20 | 7.77 | FF | -  
+>      noice | 90000 | 160 | 30 | 9.99 | FFFFFF | -  
+
   
 # Tested with 
 - Esp8266  

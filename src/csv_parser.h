@@ -11,9 +11,9 @@ struct Dict {
   
   int header_index; // in csv file 
   
-  Dict(String k, int vc, int t, int single_value_size) 
+  Dict(const char * k, int vc, int t, int single_value_size) 
     :
-      key(strdup(k.c_str())), 
+      key(strdup(k)), 
       values(t == '-' ? 0 : malloc((vc + 1) * single_value_size)),
       values_count(vc),
       type(t)
@@ -37,7 +37,7 @@ class CSV_Parser {
 
     static String GetTypeName(char c);
 public:
-  CSV_Parser(String s, const char * fmt, bool has_header=true);
+  CSV_Parser(const char * s, const char * fmt, bool has_header=true);
     /* Acceptable format types are:
      L - long (32-bit signed value)
      f - float
