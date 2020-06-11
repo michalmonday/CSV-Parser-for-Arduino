@@ -54,10 +54,16 @@ Programmer must:
 # How to specify value types 
 By supplying format parameter to constructor of CSV_Parser. Example:
 ```cpp
-CSV_Parser cp("my_strings,my_floats\nhello,1.1\nworld,2.2", "sf");
+char * csv_str = "my_strings,my_floats\n"
+		 "hello,1.1\n"
+		 "world,2.2";
+		 
+CSV_Parser cp(csv_str, /*format*/ "sf"); // s = string, f = float
 ```
 
-Example above is specifying "s" (string) for the 1st column, and "f" (float) for the 2nd column. Possible specifiers are:  
+Example above is specifying "s" (string) for the 1st column, and "f" (float) for the 2nd column.   
+
+Possible specifiers are:  
 L - long (32-bit signed value)  
 f - float  
 s - string (C-like string, not a "String" Arduino object, just a char pointer, terminated by 0)  
