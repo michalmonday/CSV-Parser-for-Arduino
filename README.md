@@ -88,6 +88,14 @@ And then we can use the following to get the extracted values:
 long * longs = (long*)cp[3]; // 3 becuase L is at index 3 of "---L" format string
 ```
 
+# How to check if the file was parsed correctly
+Use CSV_Parser.Print function and check serial monitor. Example:  
+```cpp
+CSV_Parser cp(/*csv*/ csv, /*format*/ "---L");
+cp.Print();
+```
+
+It will display parsed header fields, their types and all the parsed values.  
   
 # Tested with 
 - Esp8266  

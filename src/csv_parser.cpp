@@ -137,3 +137,41 @@ CSV_Parser::operator String() {
   ret += "  rows number = " + String(rows_count);
   return ret;
 }
+
+void CSV_Parser::Print() {
+  Serial.println("CSV_Parser content:");
+  Serial.println("   Header:");
+  Serial.print("      ");
+  for (int i = 0; i < dict_size; i++) { 
+    Serial.print(dict[i]->key); if(i == dict_size - 1) { continue; }
+    Serial.print(" - ");
+  }
+  Serial.println();
+
+  Serial.println("   Types:");
+  Serial.print("      ");
+  for (int i = 0; i < dict_size; i++) {
+    Serial.print(GetTypeName(dict[i]->type)); if(i == dict_size - 1) { continue; }
+    Serial.print(" - ");
+  }
+  Serial.println();
+  
+  Serial.println("   Values:");
+  for (int i = 0; i < rows_count; i++) {
+    Serial.print("      ");
+    for (int j = 0; j < dict_size; j++) {     
+      switch(dict[j]->type){
+          case 'L': Serial.print( ((long*) dict[j]->values)[i]  , DEC); break;
+          case 'f': Serial.print( ((float*)dict[j]->values)[i] );       break;
+          case 's': Serial.print( ((char**)dict[j]->values)[i] );       break;          
+          case 'd': Serial.print( ((int*)  dict[j]->values)[i]  , DEC); break;
+          case 'c': Serial.print( ((char*) dict[j]->values)[i]  , DEC); break;
+          case 'x': Serial.print( ((long*) dict[j]->values)[i]  , HEX); break;
+          case '-': Serial.print('-'); break;
+      }
+      if(j == dict_size - 1) { continue; }
+      Serial.print(" - ");
+    }
+    Serial.println();
+  }
+}

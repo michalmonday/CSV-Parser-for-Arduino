@@ -60,6 +60,8 @@ public:
   void * operator [] (int index);
   
   operator String ();
+
+  void Print();
 };
 
 #endif
