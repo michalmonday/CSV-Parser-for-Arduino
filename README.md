@@ -1,3 +1,18 @@
+## Table of contents
+* [What is CSV format](#what-is-csv-format)  
+* [What is this CSV parser](#what-is-this-csv-parser)  
+* [Motivation](#motivation)  
+* [Usage](#usage)  
+* [Things to consider](#things-to-consider)  
+* [Specifying value types](#specifying-value-types)  
+* [Casting returned values](#casting-returned-values)  
+* [Headerless files](#headerless-files)  
+* [Custom delimiter](#custom-delimiter)  
+* [Checking if the file was parsed correctly](#checking-if-the-file-was-parsed-correctly)  
+* [Testing](#testing)  
+* [To do](#to-do)  
+
+
 ## What is CSV format
 CSV means comma separated values. It's like a normal "txt" file with commas at regular places to separate some values.  
 Typically the first line of CSV file is a "header", containing names of columns (this way any reader knows which column means what).  
@@ -13,7 +28,7 @@ Using CSV format is one way of organising data, which makes it easy for programs
 ## What is this CSV parser
 It's a class to which you can supply:  
 - csv string (including new-line characters)  
-- [format string](#how-to-specify-value-types) (where each letter specifies type of value for each column)  
+- [format string](#specifying-value-types) (where each letter specifies type of value for each column)  
 
 Class parses that string, in other words, it extracts values, stores them and provides you with:  
 - easily accessible set of arrays (their types are specified by the format string)  
@@ -23,7 +38,7 @@ Class parses that string, in other words, it extracts values, stores them and pr
 I wanted to parse [covid-19 csv](https://github.com/tomwhite/covid-19-uk-data) data and couldn't find any csv parser for Arduino. So instead of rushing with a quick/dirty solution, I decided to write something that could be reused in the future (possibly by other people too).  
 
 
-## Usage example
+## Usage
 ```cpp
 char * csv_str = "my_strings,my_longs,my_ints,my_chars,my_floats,my_hex,my_to_be_ignored\n"
 		 "hello,70000,140,10,3.33,FF0000,this_value_wont_be_stored\n"
@@ -59,16 +74,30 @@ We could set each solumn to be strings like "sssssss", however this would use mo
 
 
 ## Things to consider  
-If CSV file doesn't contain header line, then it must be specified as 3rd argument of the constructor (see [this example](#csv-files-without-header))  
-If CSV file is separated by other character instead of comma, then it must be specified as 4th argument of the constructor (see [this example](#how-to-specify-delimiter))  
+If CSV file doesn't contain header line, then it must be specified as 3rd argument of the constructor (see [this example](#headerless-files))  
+If CSV file is separated by other character instead of comma, then it must be specified as 4th argument of the constructor (see [this example](#custom-delimiter))  
 
 Programmer must:  
-* know and specify what type of values are stored in each of the CSV columns (see [this example](#how-to-specify-value-types))  
-* cast returned values appropriately (see [this example](#how-to-cast-returned-values-appropriately))  
+* know and specify what type of values are stored in each of the CSV columns (see [this example](#specifying-value-types))  
+* cast returned values appropriately (see [this example](#casting-returned-values))  
 		  
+The parser does not handle quotes. What it means? Let's assume we  have the following CSV file:  
+
+> "field1","fie,ld2"  
+
+Typically, any proper CSV parser would extract these as 2 fields:  
+* field1  
+* fie,ld2 
+ 
+Notice that double-quotes would not be a part of extracted values. But this parser is simple, it would treat these as 3 fields:  
+* "field1"  
+* "fie  
+* ld2"  
+
+Double-quotes being part of extracted strings (that's what this parser would do).  
+
 		  
-## How to specify value types 
-By supplying format parameter to constructor of CSV_Parser. Example:
+## Specifying value types 
 ```cpp
 char * csv_str = "my_strings,my_floats\n"
 		 "hello,1.1\n"
@@ -80,17 +109,17 @@ CSV_Parser cp(csv_str, /*format*/ "sf"); // s = string, f = float
 Example above is specifying "s" (string) for the 1st column, and "f" (float) for the 2nd column.   
 
 Possible specifiers are:   
-s - string (C-like string, not a "String" Arduino object, just a char pointer, terminated by 0)  
-f - float  
-L - long (32-bit signed value, can't be used for values over 2147483647)  
-d - int  (16-bit signed value, can't be used for values over 32767)  
-c - char (8-bit signed value, can't be used for values over 127)  
-x - hex (stored as long)  
-"-" (dash character) means that value is unused/not-parsed (this way memory won't be allocated for values from that column)  
+**s** - string   (C-like string, not a "String" Arduino object, just a char pointer, terminated by 0)  
+**f** - float  
+**L** - int32_t  (32-bit signed value, can't be used for values over 2147483647)  
+**d** - int16_t  (16-bit signed value, can't be used for values over 32767)  
+**c** - char     (8-bit signed value, can't be used for values over 127)  
+**x** - hex      (stored as int32_t)  
+**-** (dash character) means that value is unused/not-parsed (this way memory won't be allocated for values from that column)  
 
 
-## How to cast returned values appropriately
-By casting to the corresponding format specifier. Let's suppose that we parse the following:  
+## Casting returned values
+Let's suppose that we parse the following:  
 ```cpp
 char * csv_str = "my_strings,my_floats\n"
 		 "hello,1.1\n"
@@ -108,7 +137,7 @@ float *floats =   (float*)cp["my_floats"];
 "x" (hex input values), should be cast as "long*" (or unsigned long*), because that's how they're stored. Casting them to "int*" would result in wrong address being computed when using `ints[index]`.  
   
   
-## CSV files without header
+## Headerless files
 To parse CSV files without header we can specify 3rd optional argument to the constructor. Example:  
 ```cpp
 CSV_Parser cp(csv_str, /*format*/ "---L", /*has_header*/ false);
@@ -120,7 +149,18 @@ long * longs = (long*)cp[3]; // 3 becuase L is at index 3 of "---L" format strin
 ```
 
 
-## How to check if the file was parsed correctly
+## Custom delimiter
+Delimiter is 4th parameter of the constructor. It's comma (,) by default. We can customize it like this:  
+```cpp
+char * csv_str = "my_strings;my_floats\n"
+		 "hello;1.1\n"
+		 "world;2.2";
+		 
+CSV_Parser cp(csv_str, /*format*/ "sf", /*has_header*/ true, /*delimiter*/ ';');
+```  
+
+
+## Checking if the file was parsed correctly
 Use CSV_Parser.Print function and check serial monitor. Example:  
 ```cpp
 CSV_Parser cp(csv_str, /*format*/ "---L");
@@ -137,16 +177,6 @@ It will display parsed header fields, their types and all the parsed values. Lik
 >      hello | 70000 | 140 | 10 | 3.33 | FF0000 | -   
 >      world | 80000 | 150 | 20 | 7.77 | FF | -  
 >      noice | 90000 | 160 | 30 | 9.99 | FFFFFF | -  
-
-## How to specify delimiter
-Delimiter is 4th parameter of the constructor. It's comma (,) by default. We can customize it like this:  
-```cpp
-char * csv_str = "my_strings;my_floats\n"
-		 "hello;1.1\n"
-		 "world;2.2";
-		 
-CSV_Parser cp(csv_str, /*format*/ "sf", /*has_header*/ true, /*delimiter*/ ';');
-```  
 
   
 ## Testing
