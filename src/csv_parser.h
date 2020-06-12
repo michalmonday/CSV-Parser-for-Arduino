@@ -36,13 +36,13 @@ class CSV_Parser {
 public:
   CSV_Parser(const char * s, const char * fmt, bool has_header=true, char delimiter=',');
     /* Acceptable format types are:
-     L - long (32-bit signed value)
-     f - float
-     s - string (C-like, not a "String" Arduino object, just char pointer)
-     d - int (16-bit signed value, can't be used for values over 65535)
-     c - char (8-bit signed value, can't be used for values over 127)
-     x - hex (stored as long)
-     - - unused (this way memory won't be allocated for the values)
+        s - string  (C-like string, not a "String" Arduino object, just a char pointer, terminated by 0)  
+        f - float  
+        L - int32_t (32-bit signed value, can't be used for values over 2147483647)  
+        d - int16_t (16-bit signed value, can't be used for values over 32767)  
+        c - char    (8-bit signed value, can't be used for values over 127)  
+        x - hex     (stored as int32_t)  
+        "-" (dash character) means that value is unused/not-parsed (this way memory won't be allocated for values from that column)
   */
 
   ~CSV_Parser();
