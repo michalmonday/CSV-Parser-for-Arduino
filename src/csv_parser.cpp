@@ -52,14 +52,17 @@ CSV_Parser::CSV_Parser(const char * s, const char * fmt, bool has_header, char d
         
           if (has_header) {
             keys[col] = strndup(s, key_len);
-            s += key_len + 1; 
+            //s += key_len + 1;  
           } else {
             keys[col] = 0; //(char*)malloc(12);
             //sprintf(keys[col], "col_%d", col);
           }
           values[col] = malloc(single_value_size * rows_count);
           types[col] = fmt[col];
+          
+          
       }
+      s += key_len + 1; 
       //Serial.println("Free heap (after col no " + String(col) + " was created) = " + String(ESP.getFreeHeap())); 
   }    
 
