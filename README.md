@@ -47,12 +47,12 @@ char * csv_str = "my_strings,my_longs,my_ints,my_chars,my_floats,my_hex,my_to_be
 
 CSV_Parser cp(csv_str, /*format*/ "sLdcfx-");
 
-char  **strings =       (char**)cp["my_strings"];
-long  *longs =          (long*) cp["my_longs"];
-int   *ints =           (int*)  cp["my_ints"];
-char  *chars =          (char*) cp["my_chars"];
-float *floats =         (float*)cp["my_floats"];
-long  *longs_from_hex = (long*) cp["my_hex"]; // CSV_Parser stores hex as longs (casting to int* would point to wrong address when ints[ind] is used)
+char    **strings =         (char**)cp["my_strings"];
+int32_t *longs =          (int32_t*)cp["my_longs"];
+int16_t *ints =           (int16_t*)cp["my_ints"];
+char    *chars =             (char*)cp["my_chars"];
+float   *floats =           (float*)cp["my_floats"];
+int32_t *longs_from_hex = (int32_t*)cp["my_hex"];    // CSV_Parser stores hex as longs (casting to int* would point to wrong address when ints[ind] is used)
 
 for (int i = 0; i < cp.GetRowsCount(); i++) {
     Serial.print(strings[i]);             Serial.print(" - ");
