@@ -34,7 +34,7 @@ class CSV_Parser {
 
     static String GetTypeName(char c);
 public:
-  CSV_Parser(const char * s, const char * fmt, bool has_header=true);
+  CSV_Parser(const char * s, const char * fmt, bool has_header=true, char delimiter=',');
     /* Acceptable format types are:
      L - long (32-bit signed value)
      f - float

@@ -1,6 +1,6 @@
 #include "csv_parser.h"
 
-int CountCharInStr(const char * s, const char c, int size_limit=0) {
+int CountCharInStr(const char * s, char c, int size_limit=0) {
   int count = 0;
   for (int i = 0; i < strlen(s); i++) {
     if (s[i] == c)
@@ -13,8 +13,10 @@ int CountCharInStr(const char * s, const char c, int size_limit=0) {
 }
   
 
-CSV_Parser::CSV_Parser(const char * s, const char * fmt, bool has_header) {
-  cols_count = CountCharInStr(s, ',', strcspn(s, "\n")) + 1;
+CSV_Parser::CSV_Parser(const char * s, const char * fmt, bool has_header, char delimiter) {
+  const char delim_chars[3] = {'\n', delimiter, 0};
+  
+  cols_count = CountCharInStr(s, delimiter, strcspn(s, "\n")) + 1;
   rows_count = CountCharInStr(s, '\n') - (s[strlen(s)-1] == '\n') + 1 - has_header; // exclude header if it's present
   byte dict_size = 0;
   
@@ -24,7 +26,7 @@ CSV_Parser::CSV_Parser(const char * s, const char * fmt, bool has_header) {
 
   for (int header_index = 0; header_index < strlen(fmt); header_index++) {
       char * key;
-      int key_len = strcspn(s, "\n,");
+      int key_len = strcspn(s, delim_chars);
       
       if (has_header) {
         key = strndup(s, key_len);
@@ -54,34 +56,16 @@ CSV_Parser::CSV_Parser(const char * s, const char * fmt, bool has_header) {
 
   for (int row = 0; row < rows_count; row++) {
     for (int header_index = 0; header_index < strlen(fmt); header_index++) {
-      int val_len = strcspn(s, "\n,");
+      int val_len = strcspn(s, delim_chars);
       char * val = strndup(s, val_len);
 
       switch (fmt[header_index]) {
-        case 'L': {
-          *((long*)dict[header_index]->values + row) = atol(val);
-          break;
-          }
-        case 'f': {
-          *((float*)dict[header_index]->values + row) = (float)atof(val);
-          break;
-        }
-        case 's': {
-          *((char**)dict[header_index]->values + row) = strdup(val);
-          break;
-        }
-        case 'd': {
-          *((int*)dict[header_index]->values + row) = atoi(val);
-          break;
-        }
-        case 'c': {
-          *((char*)dict[header_index]->values + row) = (char)atoi(val);
-          break;
-        }
-        case 'x': {
-          *((long*)dict[header_index]->values + row) = strtol(val, 0, 16); // hex input is stored as long
-          break;
-        }
+        case 'L': { ((long*)dict[header_index]->values)[row]  = atol(val);          break; }
+        case 'f': { ((float*)dict[header_index]->values)[row] = (float)atof(val);   break; }
+        case 's': { ((char**)dict[header_index]->values)[row] = strdup(val);        break; }
+        case 'd': { ((int*)dict[header_index]->values)[row]   = atoi(val);          break; }
+        case 'c': { ((char*)dict[header_index]->values)[row]  = (char)atoi(val);    break; }
+        case 'x': { ((long*)dict[header_index]->values)[row]  = strtol(val, 0, 16); break; } // hex input is stored as long
         case '-': break;
       }
       s += val_len + 1;
