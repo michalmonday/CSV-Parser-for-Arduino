@@ -181,9 +181,9 @@ It will display parsed header fields, their types and all the parsed values. Lik
   
 ## Testing
 It was tested with Esp8266.  
-`ESP.getFreeHeap()` function was used to check for possible memory leak. 
+`ESP.getFreeHeap()` function was used to check for possible memory leaks and to examine memory space efficiency, see [this wiki page](https://github.com/michalmonday/Arduino-CSV-Parser/wiki/Memory-space-efficiency-test) for test details and results.  
 
 
 ## To do
-Examine how memory space efficient it is (when parsing) and how much memory the code/sketch takes.   
+Check how much memory the code/sketch takes.   
 

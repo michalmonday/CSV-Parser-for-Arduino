@@ -3,33 +3,13 @@
 
 #include <Arduino.h>
 
-struct Dict {
-  char * key;
-  void * values;
-  int values_count;
-  char type;
-  
-  Dict(const char * k, int vc, int t, int single_value_size) 
-    :
-      key(strdup(k)), 
-      values(t == '-' ? 0 : malloc((vc + 1) * single_value_size)),
-      values_count(vc),
-      type(t)
-    {
-    }
-  
-  ~Dict() {
-    free(key);
-    if (type == 's') 
-      for (int i = 0; i < values_count; i++)
-        free(((char**)values)[i]);
-    if (type != '-')
-      free(values);
-  }
-};
-
 class CSV_Parser {
-    Dict **dict;
+    char ** keys;
+    void ** values;
+    char * types;
+    
+    //char * col_map; // it links keys, values, types to their corresponding csv header
+    
     int rows_count, cols_count;
 
     static String GetTypeName(char c);
