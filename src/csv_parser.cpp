@@ -29,9 +29,9 @@ CSV_Parser::CSV_Parser(const char * s, const char * fmt, bool has_header, char d
   for (int col = 0; col < strlen(fmt); col++) {
       int key_len = strcspn(s, delim_chars);
       if (fmt[col] != '-') {
-          keys[col] = has_header ? strndup(s, key_len) : 0;
-          values[col] = malloc(GetTypeSize(fmt[col]) * rows_count);
-          types[col] = fmt[col];
+        keys[col] = has_header ? strndup(s, key_len) : 0;
+        values[col] = malloc(GetTypeSize(fmt[col]) * rows_count);         
+        types[col] = fmt[col];
       }
       s += key_len + 1; 
       //Serial.println("Free heap (after col no " + String(col) + " was created) = " + String(ESP.getFreeHeap())); 
@@ -59,7 +59,7 @@ CSV_Parser::~CSV_Parser() {
   for (int col = 0; col < cols_count; col++) {
     if (types[col] == 's')
       for (int row = 0; row < rows_count; row++)
-        free(((char**)values)[row]);
+        free(((char**)values[col])[row]);
     
     if (keys[col])   free(keys[col]);
     if (values[col]) free(values[col]);
@@ -86,8 +86,8 @@ int8_t CSV_Parser::GetTypeSize(char type_specifier) {
   return 0;
 }
 
-const char * CSV_Parser::GetTypeName(char c) {
-  switch(c){
+const char * CSV_Parser::GetTypeName(char type_specifier) {
+  switch(type_specifier){
       case 's': return "char*";          
       case 'f': return "float";
       case 'L': return "int32_t";
