@@ -12,7 +12,10 @@ class CSV_Parser {
     
     int rows_count, cols_count;
 
-    static String GetTypeName(char c);
+    static int8_t GetTypeSize(char type_specifier);
+    static const char * GetTypeName(char type_specifier); 
+
+    void SaveNewValue(const char * val, char type_specifier, int row, int col);
 public:
   CSV_Parser(const char * s, const char * fmt, bool has_header=true, char delimiter=',');
     /* Acceptable format types are:

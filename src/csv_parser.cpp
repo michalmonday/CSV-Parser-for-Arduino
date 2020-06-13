@@ -11,10 +11,11 @@ int CountCharInStr(const char * s, char c, int size_limit=0) {
   }
   return count;
 }
-  
+
 
 CSV_Parser::CSV_Parser(const char * s, const char * fmt, bool has_header, char delimiter) {
   const char delim_chars[3] = {'\n', delimiter, 0};
+  const char * base_s = s;
   
   cols_count = CountCharInStr(s, delimiter, strcspn(s, "\n")) + 1;
   rows_count = CountCharInStr(s, '\n') - (s[strlen(s)-1] == '\n') + 1 - has_header; // exclude header if it's present
@@ -27,63 +28,28 @@ CSV_Parser::CSV_Parser(const char * s, const char * fmt, bool has_header, char d
 
   for (int col = 0; col < strlen(fmt); col++) {
       int key_len = strcspn(s, delim_chars);
-
-      int single_value_size;
-      switch (fmt[col]) {
-        case 's': { single_value_size = sizeof(char*);   break; } // c-like string
-        case 'f': { single_value_size = sizeof(float);   break; } 
-        case 'L': { single_value_size = sizeof(int32_t); break; } // 32-bit signed number (not higher than 2147483647)       
-        case 'd': { single_value_size = sizeof(int16_t); break; } // 16-bit signed number (not higher than 32767)
-        case 'c': { single_value_size = sizeof(char);    break; } // 8-bit signed number  (not higher than 127)
-        case 'x': { single_value_size = sizeof(int32_t); break; } // hex input is stored as long (32-bit signed number)
-        case '-': { single_value_size = 0;               break; }
-        
-        default : Serial.println("CSV_Parser, wrong fmt specifier = " + String(fmt[col])); break;
-      }
-
-      //Serial.println("single_value_size =" + String(single_value_size) +  ", values_count = " + String(rows_count));
-      
       if (fmt[col] != '-') {
-        /*
-          keys   = (char**)realloc(keys, (col+1) * sizeof(char*));
-          values = (void**)realloc(values, (col+1) * sizeof(void*));
-          types  =  (char*)realloc(types, col+1);
-        */
-        
-          if (has_header) {
-            keys[col] = strndup(s, key_len);
-            //s += key_len + 1;  
-          } else {
-            keys[col] = 0; //(char*)malloc(12);
-            //sprintf(keys[col], "col_%d", col);
-          }
-          values[col] = malloc(single_value_size * rows_count);
+          keys[col] = has_header ? strndup(s, key_len) : 0;
+          values[col] = malloc(GetTypeSize(fmt[col]) * rows_count);
           types[col] = fmt[col];
-          
-          
       }
       s += key_len + 1; 
       //Serial.println("Free heap (after col no " + String(col) + " was created) = " + String(ESP.getFreeHeap())); 
   }    
+
+  if (!has_header)
+    s = base_s;
 
   for (int row = 0; row < rows_count; row++) {
     for (int col = 0; col < strlen(fmt); col++) {
       int val_len = strcspn(s, delim_chars);
       char * val = strndup(s, val_len);
 
-      switch (fmt[col]) {
-        case 's': { ((char**)  values[col])[row] = strdup(val);                 break; } // c-like string
-        case 'f': { ((float*)  values[col])[row] = (float)atof(val);            break; }
-        case 'L': { ((int32_t*)values[col])[row] = (int32_t)atol(val);          break; } // 32-bit signed number (not higher than 2147483647) 
-        case 'd': { ((int16_t*)values[col])[row] = (int16_t)atoi(val);          break; } // 16-bit signed number (not higher than 32767)
-        case 'c': { ((char*)   values[col])[row] = (char)atoi(val);             break; } // 8-bit signed number  (not higher than 127)
-        case 'x': { ((int32_t*)values[col])[row] = (int32_t)strtol(val, 0, 16); break; } // hex input is stored as long (32-bit signed number)
-        case '-': break;
-      }
+      SaveNewValue(val, fmt[col], row, col);
+
       s += val_len + 1;
       free(val);
     }
-    //Serial.println("Free heap (after row no " + String(row) + " was parsed) = " + String(ESP.getFreeHeap())); 
   }
 
   //Serial.println("Free heap (CSV_Parser constructor end) = " + String(ESP.getFreeHeap()));
@@ -102,6 +68,50 @@ CSV_Parser::~CSV_Parser() {
   free(values);
   free(types);
 }
+
+
+
+int8_t CSV_Parser::GetTypeSize(char type_specifier) {
+  switch (type_specifier) {
+    case 's': return sizeof(char*);   // c-like string
+    case 'f': return sizeof(float); 
+    case 'L': return sizeof(int32_t); // 32-bit signed number (not higher than 2147483647)       
+    case 'd': return sizeof(int16_t); // 16-bit signed number (not higher than 32767)
+    case 'c': return sizeof(char);    // 8-bit signed number  (not higher than 127)
+    case 'x': return sizeof(int32_t); // hex input is stored as long (32-bit signed number)
+    case '-': return 0;   
+    case   0: return 0;
+    default : Serial.println("CSV_Parser, wrong fmt specifier = " + String(type_specifier));
+  }
+  return 0;
+}
+
+const char * CSV_Parser::GetTypeName(char c) {
+  switch(c){
+      case 's': return "char*";          
+      case 'f': return "float";
+      case 'L': return "int32_t";
+      case 'd': return "int16_t";
+      case 'c': return "char";
+      case 'x': return "hex (int32_t)"; // hex input, but it's stored as int32_t
+      case '-': return "unused";
+      case   0: return "unused";
+      default : return "unknown";
+  }
+}
+
+void CSV_Parser::SaveNewValue(const char * val, char type_specifier, int row, int col) {
+  switch (type_specifier) {
+    case 's': { ((char**)  values[col])[row] = strdup(val);                 break; } // c-like string
+    case 'f': { ((float*)  values[col])[row] = (float)atof(val);            break; }
+    case 'L': { ((int32_t*)values[col])[row] = (int32_t)atol(val);          break; } // 32-bit signed number (not higher than 2147483647) 
+    case 'd': { ((int16_t*)values[col])[row] = (int16_t)atoi(val);          break; } // 16-bit signed number (not higher than 32767)
+    case 'c': { ((char*)   values[col])[row] = (char)atoi(val);             break; } // 8-bit signed number  (not higher than 127)
+    case 'x': { ((int32_t*)values[col])[row] = (int32_t)strtol(val, 0, 16); break; } // hex input is stored as long (32-bit signed number)
+    case '-': break;
+  }
+}
+
 
 void CSV_Parser::PrintKeys() {
   Serial.println("Keys:");
@@ -122,20 +132,6 @@ void * CSV_Parser::GetValues(const char * key) {
 void * CSV_Parser::GetValues(int index)          { return index < cols_count ? values[index] : (void*)0; }
 void * CSV_Parser::operator [] (const char *key) { return GetValues(key);   }
 void * CSV_Parser::operator [] (int index)       { return GetValues(index); }
-
-String CSV_Parser::GetTypeName(char c) {
-  switch(c){
-      case 's': return "char*";          
-      case 'f': return "float";
-      case 'L': return "int32_t";
-      case 'd': return "int16_t";
-      case 'c': return "char";
-      case 'x': return "hex (int32_t)"; // hex input, but it's stored as int32_t
-      case '-': return "unused";
-      case   0: return "unused";
-      default : return "unknown (" + String(c) + ")";
-  }
-}
 
 CSV_Parser::operator String() {
   String ret = "CSV_Parser:\n";
