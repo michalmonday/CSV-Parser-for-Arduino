@@ -38,7 +38,7 @@ public:
   // Because supplied quote char is likely to be a single-quote, which would require escaping using backslash if it was supplied as char.
   // I bet some people would rather use "'" instead of '\'' 
   // And that's the point of having additional constructor below:
-  CSV_Parser(const char * s, const char * fmt, bool hh, char d, const char * quote_char) : CSV_Parser(s, fmt, hh, d, quote_char[0]) {}
+  CSV_Parser(const char * s, const char * fmt, bool hh, char d, const char * qc) : CSV_Parser(s, fmt, hh, d, qc[0]) {}
 
   ~CSV_Parser();
 

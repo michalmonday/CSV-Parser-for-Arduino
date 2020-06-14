@@ -1,15 +1,66 @@
 #include "csv_parser.h"
 
-int CountCharInStr(const char * s, char c, int size_limit=0) {
-  int count = 0;
-  for (int i = 0; i < strlen(s); i++) {
-    if (s[i] == c)
-      count++;
-      
-    if (size_limit && i == size_limit)
-      break;
+CSV_Parser::CSV_Parser(const char * s, const char * fmt, bool has_header_, char delimiter_, char quote_char_) :
+  cols_count(strlen(fmt)),
+  types(strdup(fmt)),
+  has_header(has_header_),
+  delimiter(delimiter_),
+  quote_char(quote_char_)
+{
+  const char delim_chars[4] = {'\r', '\n', delimiter, 0}; 
+  rows_count = CountRows(s);                                  // can't be in initializer list because it relies on other members
+  keys =   (char**)calloc(cols_count, sizeof(char*));         // calloc fills memory with 0's so then I can simply use "if(keys[i]) { do something with key[i] }"
+  values = (void**)calloc(cols_count, sizeof(void*));
+
+  if (has_header) {
+    for (int col = 0; col < strlen(fmt); col++) {
+        int key_len = 0;
+        keys[col] = ParseStringValue(s, delim_chars, &key_len);
+        if (fmt[col] == '-') {
+          free(keys[col]);
+          keys[col] = 0; 
+        } else {
+          values[col] = malloc(GetTypeSize(fmt[col]) * rows_count);         
+        }
+                
+        s += key_len + 1; 
+        while(*s == '\n' || *s == '\r') s++;
+    }
+  }    
+
+  for (int row = 0; row < rows_count; row++) {
+    for (int col = 0; col < strlen(fmt); col++) {
+      int val_len = 0;
+      char * val;
+      if (fmt[col] != 's') { 
+        val_len = strcspn(s, delim_chars);
+        val = strndup(s, val_len);
+        RemoveEnclosingDoubleQuotes(val);
+      } else {
+        val = ParseStringValue(s, delim_chars, &val_len);
+      }
+
+      SaveNewValue(val, fmt[col], row, col);
+
+      s += val_len + 1;
+      free(val);
+      while(*s == '\n' || *s == '\r') s++;
+    }
   }
-  return count;
+}
+
+CSV_Parser::~CSV_Parser() {
+  for (int col = 0; col < cols_count; col++) {
+    if (types[col] == 's')
+      for (int row = 0; row < rows_count; row++)
+        free(((char**)values[col])[row]);
+    
+    if (keys[col])   free(keys[col]);
+    if (values[col]) free(values[col]);
+  }
+  free(keys);
+  free(values);
+  free(types);
 }
 
 /*          
@@ -100,88 +151,6 @@ int CSV_Parser::CountRows(const char *s) {
   }
   return count - has_header;
 }
-
-
-CSV_Parser::CSV_Parser(const char * s, const char * fmt, bool has_header_, char delimiter_, char quote_char_) :
-  cols_count(strlen(fmt)),
-  types(strdup(fmt)),
-  has_header(has_header_),
-  delimiter(delimiter_),
-  quote_char(quote_char_)
-{
-  const char delim_chars[4] = {'\r', '\n', delimiter, 0};
-  const char * base_s = s;
-  
-  //cols_count = strlen(fmt); //CountCharInStr(s, delimiter, strcspn(s, "\n")) + 1;
-  Serial.println("Before CountRows = " + String(millis()));
-  rows_count = CountRows(s); //CountCharInStr(s, '\n') - (s[strlen(s)-1] == '\n') + 1 - has_header; // exclude header if it's present
-  Serial.println("After CountRows = " + String(millis()));
-
-  Serial.println("Rows count = " + String(rows_count));
-
-  keys =   (char**)calloc(cols_count, sizeof(char*)); // calloc fills memory with 0's so then I can simply use "if(keys[i]) { do something with key[i] }"
-  values = (void**)calloc(cols_count, sizeof(void*));
-
-  //Serial.println("Free heap (CSV_Parser constructor) = " + String(ESP.getFreeHeap())); 
-
-  for (int col = 0; col < strlen(fmt); col++) {
-      int key_len = 0; //strcspn(s, delim_chars);
-      keys[col] = ParseStringValue(s, delim_chars, &key_len);
-      if (fmt[col] == '-' || !has_header) {
-        free(keys[col]);
-        keys[col] = 0; 
-      }
-      
-      if (fmt[col] != '-') {
-        values[col] = malloc(GetTypeSize(fmt[col]) * rows_count);         
-        types[col] = fmt[col];  
-      }
-              
-      s += key_len + 1; 
-      while(*s == '\n' || *s == '\r') s++;
-      //Serial.println("Free heap (after col no " + String(col) + " was created) = " + String(ESP.getFreeHeap())); 
-  }    
-
-  if (!has_header)
-    s = base_s;
-
-  for (int row = 0; row < rows_count; row++) {
-    for (int col = 0; col < strlen(fmt); col++) {
-      int val_len = 0;
-      char * val;
-      if (fmt[col] != 's') { 
-        val_len = strcspn(s, delim_chars);
-        val = strndup(s, val_len);
-        RemoveEnclosingDoubleQuotes(val);
-      } else {
-        val = ParseStringValue(s, delim_chars, &val_len);
-      }
-
-      SaveNewValue(val, fmt[col], row, col);
-
-      s += val_len + 1;
-      free(val);
-      while(*s == '\n' || *s == '\r') s++;
-    }
-  }
-
-  //Serial.println("Free heap (CSV_Parser constructor end) = " + String(ESP.getFreeHeap()));
-}
-
-CSV_Parser::~CSV_Parser() {
-  for (int col = 0; col < cols_count; col++) {
-    if (types[col] == 's')
-      for (int row = 0; row < rows_count; row++)
-        free(((char**)values[col])[row]);
-    
-    if (keys[col])   free(keys[col]);
-    if (values[col]) free(values[col]);
-  }
-  free(keys);
-  free(values);
-  free(types);
-}
-
 
 
 int8_t CSV_Parser::GetTypeSize(char type_specifier) {
