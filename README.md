@@ -33,6 +33,7 @@ It's a class to which you can supply:
 Class parses that string, in other words, it extracts values, stores them and provides you with:  
 - easily accessible set of arrays (their types are specified by the format string)  
 
+It adheres to the [RFC 4180 specification](https://tools.ietf.org/html/rfc4180)  
 
 ## Motivation
 I wanted to parse [covid-19 csv](https://github.com/tomwhite/covid-19-uk-data) data and couldn't find any csv parser for Arduino. So instead of rushing with a quick/dirty solution, I decided to write something that could be reused in the future (possibly by other people too).  
