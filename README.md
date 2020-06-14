@@ -187,4 +187,5 @@ It was tested with Esp8266.
 ## To do
 Check how much memory the code/sketch takes.   
 Handle double quotes.  
+Handle carriage return characters (now it assumes only "\n" is used instead of "\r\n").  
 
