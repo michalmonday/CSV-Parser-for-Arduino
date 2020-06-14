@@ -12,21 +12,23 @@ CSV_Parser::CSV_Parser(const char * s, const char * fmt, bool has_header_, char 
   keys =   (char**)calloc(cols_count, sizeof(char*));         // calloc fills memory with 0's so then I can simply use "if(keys[i]) { do something with key[i] }"
   values = (void**)calloc(cols_count, sizeof(void*));
 
-  if (has_header) {
-    for (int col = 0; col < strlen(fmt); col++) {
-        int key_len = 0;
-        keys[col] = ParseStringValue(s, delim_chars, &key_len);
-        if (fmt[col] == '-') {
-          free(keys[col]);
-          keys[col] = 0; 
-        } else {
-          values[col] = malloc(GetTypeSize(fmt[col]) * rows_count);         
-        }
-                
-        s += key_len + 1; 
-        while(*s == '\n' || *s == '\r') s++;
-    }
+  const char * base_s = s;
+  for (int col = 0; col < strlen(fmt); col++) {
+      int key_len = 0;
+      keys[col] = ParseStringValue(s, delim_chars, &key_len);
+      if (fmt[col] == '-' || !has_header) {
+        free(keys[col]);
+        keys[col] = 0; 
+      } 
+      if (fmt[col] != '-')
+        values[col] = malloc(GetTypeSize(fmt[col]) * rows_count);
+        
+      s += key_len + 1; 
+      while(*s == '\n' || *s == '\r') s++;
   }    
+
+  if (!has_header) 
+    s = base_s;
 
   for (int row = 0; row < rows_count; row++) {
     for (int col = 0; col < strlen(fmt); col++) {
