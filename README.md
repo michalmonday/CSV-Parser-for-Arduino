@@ -199,4 +199,5 @@ See [this wiki page](https://github.com/michalmonday/Arduino-CSV-Parser/wiki/Spe
 
 ## To do
 Check how much memory the code/sketch takes.   
-Change coding style/interface/naming to follow Arduino API style guide.   
+Change coding style/interface/naming to follow Arduino API style guide.  
+Add keywords.txt.   
