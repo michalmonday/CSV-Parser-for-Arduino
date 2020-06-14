@@ -8,6 +8,7 @@
 * [Casting returned values](#casting-returned-values)  
 * [Headerless files](#headerless-files)  
 * [Custom delimiter](#custom-delimiter)  
+* [Custom quote character](#custom-quote-character)  
 * [Checking if the file was parsed correctly](#checking-if-the-file-was-parsed-correctly)  
 * [Testing](#testing)  
 * [To do](#to-do)  
@@ -33,7 +34,8 @@ It's a class to which you can supply:
 Class parses that string, in other words, it extracts values, stores them and provides you with:  
 - easily accessible set of arrays (their types are specified by the format string)  
 
-It adheres to the [RFC 4180 specification](https://tools.ietf.org/html/rfc4180)  
+It adheres to the [RFC 4180 specification](https://tools.ietf.org/html/rfc4180).  
+
 
 ## Motivation
 I wanted to parse [covid-19 csv](https://github.com/tomwhite/covid-19-uk-data) data and couldn't find any csv parser for Arduino. So instead of rushing with a quick/dirty solution, I decided to write something that could be reused in the future (possibly by other people too).  
@@ -81,6 +83,25 @@ If CSV file is separated by other character instead of comma, then it must be sp
 Programmer must:  
 * know and specify what type of values are stored in each of the CSV columns (see [this example](#specifying-value-types))  
 * cast returned values appropriately (see [this example](#casting-returned-values))  
+
+**What if the string itself stored in CSV contains comma (or other custom delimiter)?**  
+As described in the [RFC 4180 specification](https://tools.ietf.org/html/rfc4180) we can enclose the string using double quotes. Example csv:   
+> my_strings,my_ints\n  
+> "single, string, including, commas",10\n  
+> "another string, with single comma",20  
+
+
+**What if we wanted to store double quotes themselves?**   
+As described in the [RFC 4180 specification](https://tools.ietf.org/html/rfc4180) we can put two double quotes next to each other. The parser will treat them as one. Example:   
+> my_strings,my_ints\n   
+> "this string will have 1 "" double quote inside it",10\n  
+> "another string with "" double quote char",10\n  
+
+Parser will read such file as:  
+1st string = this string will have 1 " double quote inside it  
+2nd string = another string with " double quote char  
+
+Notice that it's possible to customize the quote char as shown in [this section](#custom-quote-character). E.g. to use single quotes (') instead.  
 
 		  
 ## Specifying value types 
@@ -144,6 +165,12 @@ char * csv_str = "my_strings;my_floats\n"
 		 
 CSV_Parser cp(csv_str, /*format*/ "sf", /*has_header*/ true, /*delimiter*/ ';');
 ```  
+
+## Custom quote character
+Quote character is 5th parameter of the constructor. It's double quote (") by default. We can customize it like this:  
+```cpp 
+CSV_Parser cp(csv_str, /*format*/ "sLdcfxs", /*has_header*/ true, /*delimiter*/ ',', /*quote_char*/ "'");
+```
 
 
 ## Checking if the file was parsed correctly
