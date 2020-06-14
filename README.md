@@ -80,21 +80,6 @@ If CSV file is separated by other character instead of comma, then it must be sp
 Programmer must:  
 * know and specify what type of values are stored in each of the CSV columns (see [this example](#specifying-value-types))  
 * cast returned values appropriately (see [this example](#casting-returned-values))  
-		  
-The parser does not handle quotes. What it means? Let's assume we  have the following CSV file:  
-
-> "field1","fie,ld2"  
-
-Typically, any proper CSV parser would extract these as 2 fields:  
-* field1  
-* fie,ld2 
- 
-Notice that double-quotes would not be a part of extracted values. But this parser is simple, it would treat these as 3 fields:  
-* "field1"  
-* "fie  
-* ld2"  
-
-Double-quotes being part of extracted strings (that's what this parser would do).  
 
 		  
 ## Specifying value types 
@@ -186,6 +171,4 @@ It was tested with Esp8266.
 
 ## To do
 Check how much memory the code/sketch takes.   
-Handle double quotes.  
-Handle carriage return characters (now it assumes only "\n" is used instead of "\r\n").  
-
+Check how much time it takes to parse example csv file.  
