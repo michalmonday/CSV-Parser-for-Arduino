@@ -27,6 +27,7 @@ Example CSV file with header and 2 columns:
 
 Using CSV format is one way of organising data, which makes it easy for programs to read.  
 
+
 ## What is this CSV parser
 It's a class to which you can supply:  
 - csv string (including new-line characters)  
@@ -36,9 +37,12 @@ Class parses that string, in other words, it extracts values, stores them and pr
 - easily accessible set of arrays (their types are specified by the format string)  
 
 It adheres to the [RFC 4180 specification](https://tools.ietf.org/html/rfc4180).  
+It was written with care to not be greedy in terms of occupied memory and parsing time.  
+
 
 ## Documentation 
 https://michalmonday.github.io/Arduino-CSV-Parser/index.html  
+
 
 ## Motivation
 I wanted to parse [covid-19 csv](https://github.com/tomwhite/covid-19-uk-data) data and couldn't find any csv parser for Arduino. So instead of rushing with a quick/dirty solution, I decided to write something that could be reused in the future (possibly by other people too).  
@@ -206,6 +210,5 @@ See [this wiki page](https://github.com/michalmonday/Arduino-CSV-Parser/wiki/Spe
 
 ## To do
 Check how much memory the code/sketch takes.   
-Change coding style/interface/naming to follow Arduino API style guide.  
-Add keywords.txt.   
 Write more tests (add some handling when provided csv string has invalid format.  
+
