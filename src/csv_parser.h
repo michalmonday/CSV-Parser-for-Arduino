@@ -6,7 +6,7 @@
 class CSV_Parser {
     char ** keys;
     void ** values;
-    char * types;
+    char * types; // s = char*, f = float, L = uint32_t, d = uint16_t etc. (see github page for full list of types)
    
     int rows_count, cols_count;
 
@@ -14,7 +14,11 @@ class CSV_Parser {
     char delimiter;
     char quote_char;
 
-    char * ParseStringValue(const char *, const char * delim_chars, int * chars_occupied);
+    char delim_chars[4]; // useful for parsing
+    static Stream * debug_serial;
+
+    void ParseHeader(const char *, int * chars_occupied);
+    char * ParseStringValue(const char *, int * chars_occupied);
     void RemoveEnclosingDoubleQuotes(char *);
     void SaveNewValue(const char * val, char type_specifier, int row, int col);
 
@@ -42,7 +46,7 @@ public:
 
   ~CSV_Parser();
 
-  void PrintKeys();
+  
   int GetColumnsCount();
   int GetRowsCount(); // excluding header
   
@@ -52,7 +56,10 @@ public:
   void * operator [] (int index);
   
   operator String ();
-  void Print();
+  void PrintKeys(Stream &ser = Serial);
+  void Print(Stream &ser = Serial);
+
+  static void SetDebugSerial(Stream &ser) { debug_serial = &ser; }
 };
 
 #endif
