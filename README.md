@@ -188,7 +188,7 @@ CSV_Parser cp(csv_str, /*format*/ "sLdcfxs", /*has_header*/ true, /*delimiter*/ 
 Use CSV_Parser.Print function and check serial monitor. Example:  
 ```cpp
 CSV_Parser cp(csv_str, /*format*/ "---L");
-cp.Print();
+cp.print();
 ```
 
 It will display parsed header fields, their types and all the parsed values. Like this:  
