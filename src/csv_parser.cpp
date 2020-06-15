@@ -2,7 +2,6 @@
 
 Stream * CSV_Parser::debug_serial = &Serial;
 
-
 CSV_Parser::CSV_Parser(const char * s, const char * fmt, bool has_header_, char delimiter_, char quote_char_) :
   cols_count(strlen(fmt)),
   types(strdup(fmt)),
@@ -248,6 +247,7 @@ void * CSV_Parser::GetValues(int index)          { return index < cols_count ? v
 void * CSV_Parser::operator [] (const char *key) { return GetValues(key);   }
 void * CSV_Parser::operator [] (int index)       { return GetValues(index); }
 
+/*
 CSV_Parser::operator String() {
   String ret = "CSV_Parser:\n";
   ret += "  header fields:\n";
@@ -256,17 +256,9 @@ CSV_Parser::operator String() {
 
   ret += "  rows number = " + String(rows_count);
   return ret;
-}
+}*/
 
-/*  Prints whole parsed content including:
-    - column names
-    - column types
-    - all parsed values
 
-    The "ser" parameter is optional, by default it is "Serial" object.
-    For example, it allows to supply "Serial1" or an object of 
-    "SoftwareSerial.h" library.
-*/
 void CSV_Parser::Print(Stream &ser) {
   ser.println("CSV_Parser content:");
   ser.println("   Header:");

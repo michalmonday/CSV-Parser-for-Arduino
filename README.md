@@ -1,6 +1,7 @@
 ## Table of contents
 * [What is CSV format](#what-is-csv-format)  
 * [What is this CSV parser](#what-is-this-csv-parser)  
+* [Documentation](#documentation)  
 * [Motivation](#motivation)  
 * [Usage](#usage)  
 * [Things to consider](#things-to-consider)  
@@ -36,6 +37,8 @@ Class parses that string, in other words, it extracts values, stores them and pr
 
 It adheres to the [RFC 4180 specification](https://tools.ietf.org/html/rfc4180).  
 
+## Documentation 
+https://michalmonday.github.io/Arduino-CSV-Parser/index.html  
 
 ## Motivation
 I wanted to parse [covid-19 csv](https://github.com/tomwhite/covid-19-uk-data) data and couldn't find any csv parser for Arduino. So instead of rushing with a quick/dirty solution, I decided to write something that could be reused in the future (possibly by other people too).  
