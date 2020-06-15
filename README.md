@@ -84,6 +84,10 @@ Programmer must:
 * know and specify what type of values are stored in each of the CSV columns (see [this example](#specifying-value-types))  
 * cast returned values appropriately (see [this example](#casting-returned-values))  
 
+The CSV file may:  
+* include mixed type of line endings ('\r\n', '\n')  
+* end with '\n' or '\r\n' but it doesn't have to  
+
 **What if the string itself stored in CSV contains comma (or other custom delimiter)?**  
 As described in the [RFC 4180 specification](https://tools.ietf.org/html/rfc4180) we can enclose the string using double quotes. Example csv:   
 > my_strings,my_ints\n  
