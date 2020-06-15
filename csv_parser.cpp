@@ -39,7 +39,7 @@ CSV_Parser::CSV_Parser(const char * s, const char * fmt, bool has_header_, char 
         val_len = strcspn(s, delim_chars);
         //val = strndup(s, val_len); // available for Esp8266 but not for Arduino :(
 		val = (char*)malloc(val_len+1);
-		strncpy(val, s, val_len);
+		memcpy(val, s, val_len);
 		val[val_len] = 0;
         removeEnclosingDoubleQuotes(val);
       } else {
@@ -127,7 +127,7 @@ char * CSV_Parser::parseStringValue(const char * s, int * chars_occupied) {
     *chars_occupied = strcspn(s, delim_chars);
 	//return strndup(s, *chars_occupied); // available for Esp8266 but not for Arduino :(
 	char *str = (char*)malloc(*chars_occupied+1);
-	strncpy(str, s, *chars_occupied);
+	memcpy(str, s, *chars_occupied);
 	str[*chars_occupied] = 0;
     return str;
   }
