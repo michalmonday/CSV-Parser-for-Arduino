@@ -37,15 +37,15 @@ class CSV_Parser {
     char delim_chars[4]; // useful for parsing
     static Stream * debug_serial;
 
-    void ParseHeader(const char *, int * chars_occupied);
-    char * ParseStringValue(const char *, int * chars_occupied);
-    void RemoveEnclosingDoubleQuotes(char *);
-    void SaveNewValue(const char * val, char type_specifier, int row, int col);
+    void parseHeader(const char *, int * chars_occupied);
+    char * parseStringValue(const char *, int * chars_occupied);
+    void removeEnclosingDoubleQuotes(char *);
+    void saveNewValue(const char * val, char type_specifier, int row, int col);
 
-    int CountRows(const char *s);
+    int countRows(const char *s);
     
-    static int8_t GetTypeSize(char type_specifier);
-    static const char * GetTypeName(char type_specifier); 
+    static int8_t getTypeSize(char type_specifier);
+    static const char * getTypeName(char type_specifier); 
 public:
   /**  	
 	@param s - string containing csv   
@@ -74,20 +74,20 @@ public:
 	  Making values unusable once the CSV_Parser goes out of scope.  */
   ~CSV_Parser();
   
-  int GetColumnsCount();
+  int getColumnsCount();
   
   /**  @brief Excluding header (if it was part of supplied CSV).  */
-  int GetRowsCount();
+  int getRowsCount();
   
   /**  @brief Gets values given the column key name.  
          @param key - column name  
          @return pointer to the first value (it must be cast by the user)   */
-  void * GetValues(const char * key);    
+  void * getValues(const char * key);    
   
   /**  @brief Gets values given the column index.  
 	     @param col_index - column number (starting with 0)  
          @return pointer to the first value (it must be cast by the user)  */  
-  void * GetValues(int col_index);  
+  void * getValues(int col_index);  
   
   /**  @brief It's the same as GetValues(key) but allows to use operator instead of method call, like:  
        int32_t * my_values = (int32_t*)cp["my_key"];  */
@@ -99,7 +99,7 @@ public:
   
   //operator String ();
   
-  void PrintKeys(Stream &ser = Serial);
+  void printKeys(Stream &ser = Serial);
   
   /**  @brief Prints whole parsed content including:  
 		- column names  
@@ -109,14 +109,14 @@ public:
 		@param ser (optional) - Stream object like "Serial" (by default) or "Serial1". 
 								For example, it allows to supply "Serial1" or an object of
 								"SoftwareSerial.h" library.  */
-  void Print(Stream &ser = Serial);
+  void print(Stream &ser = Serial);
 
   /**  @brief If invalid parameters are supplied to this class, then debug serial is used to output error information.   
 	   This function is static, which means that it supposed to be called like:  
 	   CSV_Parser::SetDebugSerial(stream_object);  
 	   @param ser - Stream object like "Serial" (by default), "Serial1" or an object of
 					"SoftwareSerial.h" library. */
-  static void SetDebugSerial(Stream &ser) { debug_serial = &ser; }
+  static void setDebugSerial(Stream &ser) { debug_serial = &ser; }
 };
 
 #endif

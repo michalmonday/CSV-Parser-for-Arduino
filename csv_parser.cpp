@@ -16,20 +16,20 @@ CSV_Parser::CSV_Parser(const char * s, const char * fmt, bool has_header_, char 
       for each parsed value, I am afraid it could be slow (if by any chance realloc moved the whole currently 
       stored memory). Counting rows first adds some overhead time but it's not extreme (as realloc could be).
   */
-  rows_count = CountRows(s);                                  // can't be in initializer list because it relies on other members
+  rows_count = countRows(s);                                  // can't be in initializer list because it relies on other members
   keys =   (char**)calloc(cols_count, sizeof(char*));         // calloc fills memory with 0's so then I can simply use "if(keys[i]) { do something with key[i] }"
   values = (void**)calloc(cols_count, sizeof(void*));
 
   if (has_header) {
     int chars_occupied = 0;
-    ParseHeader(s, &chars_occupied);
+    parseHeader(s, &chars_occupied);
     s += chars_occupied;
   }
     
   // allocate memory for values
   for (int col = 0; col < cols_count; col++) 
     if (fmt[col] != '-')
-      values[col] = malloc(GetTypeSize(fmt[col]) * rows_count);
+      values[col] = malloc(getTypeSize(fmt[col]) * rows_count);
 
   for (int row = 0; row < rows_count; row++) {
     for (int col = 0; col < cols_count; col++) {
@@ -38,12 +38,12 @@ CSV_Parser::CSV_Parser(const char * s, const char * fmt, bool has_header_, char 
       if (fmt[col] != 's') { 
         val_len = strcspn(s, delim_chars);
         val = strndup(s, val_len);
-        RemoveEnclosingDoubleQuotes(val);
+        removeEnclosingDoubleQuotes(val);
       } else {
-        val = ParseStringValue(s, &val_len);
+        val = parseStringValue(s, &val_len);
       }
 
-      SaveNewValue(val, fmt[col], row, col);
+      saveNewValue(val, fmt[col], row, col);
 
       s += val_len + 1;
       free(val);
@@ -66,10 +66,10 @@ CSV_Parser::~CSV_Parser() {
   free(types);
 }
 
-void CSV_Parser::ParseHeader(const char * s, int * chars_occupied) {
+void CSV_Parser::parseHeader(const char * s, int * chars_occupied) {
   for (int col = 0; col < cols_count; col++) {
     int key_len = 0;
-    keys[col] = ParseStringValue(s, &key_len);
+    keys[col] = parseStringValue(s, &key_len);
     if (types[col] == '-' || !has_header) {
       free(keys[col]);
       keys[col] = 0; 
@@ -101,7 +101,7 @@ void CSV_Parser::ParseHeader(const char * s, int * chars_occupied) {
     - won't include carriage-return/new-line within themselves
     Knowing this, we can parse them faster (by only checking if they start and end with quote character, and removing these characters if they're present).
 */
-void CSV_Parser::RemoveEnclosingDoubleQuotes(char * s) {
+void CSV_Parser::removeEnclosingDoubleQuotes(char * s) {
   if (*s  == quote_char) {
     // shift whole string to left
     while(*++s) *(s-1) = *s;
@@ -117,7 +117,7 @@ void CSV_Parser::RemoveEnclosingDoubleQuotes(char * s) {
     value itself are properly parsed. It dynamically allocates memory, creates copy of parsed string 
     value and returns a pointer to it. Memory is supposed to be released outside of this function.  
 */
-char * CSV_Parser::ParseStringValue(const char * s, int * chars_occupied) {
+char * CSV_Parser::parseStringValue(const char * s, int * chars_occupied) {
   /*  If value is not enclosed in double quotes 
   */
   if(*s != quote_char) {
@@ -161,14 +161,14 @@ char * CSV_Parser::ParseStringValue(const char * s, int * chars_occupied) {
 
 /*  The supplied string must be the whole file, including header (if it happens to have header).  
 */
-int CSV_Parser::CountRows(const char *s) {
+int CSV_Parser::countRows(const char *s) {
   int count = 0;
   const char delim_chars[4] = {'\r', '\n', delimiter, 0};
   while(*s) {
     for (int col = 0; col < cols_count; col++) {
       int len = 0;
       if (types[col] == 's' || (has_header && count == 0)) 
-        free(ParseStringValue(s, &len));
+        free(parseStringValue(s, &len));
       else 
         len = strcspn(s, delim_chars);
       
@@ -185,7 +185,7 @@ int CSV_Parser::CountRows(const char *s) {
 }
 
 
-int8_t CSV_Parser::GetTypeSize(char type_specifier) {
+int8_t CSV_Parser::getTypeSize(char type_specifier) {
   switch (type_specifier) {
     case 's': return sizeof(char*);   // c-like string
     case 'f': return sizeof(float); 
@@ -200,7 +200,7 @@ int8_t CSV_Parser::GetTypeSize(char type_specifier) {
   return 0;
 }
 
-const char * CSV_Parser::GetTypeName(char type_specifier) {
+const char * CSV_Parser::getTypeName(char type_specifier) {
   switch(type_specifier){
       case 's': return "char*";          
       case 'f': return "float";
@@ -214,7 +214,7 @@ const char * CSV_Parser::GetTypeName(char type_specifier) {
   }
 }
 
-void CSV_Parser::SaveNewValue(const char * val, char type_specifier, int row, int col) {
+void CSV_Parser::saveNewValue(const char * val, char type_specifier, int row, int col) {
   switch (type_specifier) {
     case 's': { ((char**)  values[col])[row] = strdup(val);                 break; } // c-like string
     case 'f': { ((float*)  values[col])[row] = (float)atof(val);            break; }
@@ -227,39 +227,39 @@ void CSV_Parser::SaveNewValue(const char * val, char type_specifier, int row, in
 }
 
 
-void CSV_Parser::PrintKeys(Stream &ser) {
+void CSV_Parser::printKeys(Stream &ser) {
   ser.println("Keys:");
   for (int col = 0; col < cols_count; col++) 
     ser.println(String(col) + ". Key = " + String(keys[col] ? keys[col] : "unused"));
 }
 
-int CSV_Parser::GetColumnsCount() { return cols_count; }
-int CSV_Parser::GetRowsCount() { return rows_count; } // excluding header
+int CSV_Parser::getColumnsCount() { return cols_count; }
+int CSV_Parser::getRowsCount() { return rows_count; } // excluding header
 
-void * CSV_Parser::GetValues(const char * key) {
+void * CSV_Parser::getValues(const char * key) {
   for (int col = 0; col < cols_count; col++) 
     if (keys[col] && !strcmp(keys[col], key))
       return values[col];
   return (void*)0;
 }
 
-void * CSV_Parser::GetValues(int index)          { return index < cols_count ? values[index] : (void*)0; }
-void * CSV_Parser::operator [] (const char *key) { return GetValues(key);   }
-void * CSV_Parser::operator [] (int index)       { return GetValues(index); }
+void * CSV_Parser::getValues(int index)          { return index < cols_count ? values[index] : (void*)0; }
+void * CSV_Parser::operator [] (const char *key) { return getValues(key);   }
+void * CSV_Parser::operator [] (int index)       { return getValues(index); }
 
 /*
 CSV_Parser::operator String() {
   String ret = "CSV_Parser:\n";
   ret += "  header fields:\n";
   for (int col = 0; col < cols_count; col++) 
-    ret += "    " + String(keys[col]) + " (" + GetTypeName(types[col]) + ")\n"; 
+    ret += "    " + String(keys[col]) + " (" + getTypeName(types[col]) + ")\n"; 
 
   ret += "  rows number = " + String(rows_count);
   return ret;
 }*/
 
 
-void CSV_Parser::Print(Stream &ser) {
+void CSV_Parser::print(Stream &ser) {
   ser.println("CSV_Parser content:");
   ser.println("   Header:");
   ser.print("      ");
@@ -272,7 +272,7 @@ void CSV_Parser::Print(Stream &ser) {
   ser.println("   Types:");
   ser.print("      ");
   for (int col = 0; col < cols_count; col++) { 
-    ser.print(GetTypeName(types[col])); if(col == cols_count - 1) { continue; }
+    ser.print(getTypeName(types[col])); if(col == cols_count - 1) { continue; }
     ser.print(" | ");
   }
   ser.println();
