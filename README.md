@@ -211,4 +211,4 @@ See [this wiki page](https://github.com/michalmonday/Arduino-CSV-Parser/wiki/Spe
 ## To do
 Check how much memory the code/sketch takes.   
 Write more tests (add some handling when provided csv string has invalid format.  
-
+Add "supplyChunk" method, because now the whole csv string has to be passed, passing the string by chunks will allow the program using CSV_Parser to occupy much less memory (because it won't have to store the whole string).  
