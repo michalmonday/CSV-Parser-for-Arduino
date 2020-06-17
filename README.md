@@ -53,7 +53,7 @@ I wanted to parse [covid-19 csv](https://github.com/tomwhite/covid-19-uk-data) d
 char * csv_str = "my_strings,my_longs,my_ints,my_chars,my_floats,my_hex,my_to_be_ignored\n"
 		 "hello,70000,140,10,3.33,FF0000,this_value_wont_be_stored\n"
 		 "world,80000,150,20,7.77,0000FF,this_value_wont_be_stored\n"
-		 "noice,90000,160,30,9.99,FFFFFF,this_value_wont_be_stored";
+		 "noice,90000,160,30,9.99,FFFFFF,this_value_wont_be_stored\n";
 
 CSV_Parser cp(csv_str, /*format*/ "sLdcfx-");
 
@@ -94,6 +94,11 @@ Programmer must:
 The CSV file may:  
 * include mixed type of line endings ('\r\n', '\n')  
 * end with '\n' or '\r\n' but it doesn't have to  
+
+If the file does not end with "\n" then additional function must be called after supplying the whole csv:  
+```cpp
+cp.ParseLeftover();
+```
 
 **What if the string itself stored in CSV contains comma (or other custom delimiter)?**  
 As described in the [RFC 4180 specification](https://tools.ietf.org/html/rfc4180) we can enclose the string using double quotes. Example csv:   
@@ -194,9 +199,9 @@ cp.print();
 It will display parsed header fields, their types and all the parsed values. Like this:  
 > CSV_Parser content:  
 >   Header:  
->      my_strings | my_longs | my_ints | my_chars | my_floats | my_hex | my_to_be_ignored  
+>      my_strings | my_longs | my_ints | my_chars | my_floats | my_hex | -  
 >   Types:  
->      char* | long | int | char | float | hex (long) | unused  
+>      char* | int32_t | int16_t | char | float | hex (long) | -  
 >   Values:  
 >      hello | 70000 | 140 | 10 | 3.33 | FF0000 | -   
 >      world | 80000 | 150 | 20 | 7.77 | FF | -  
@@ -211,4 +216,5 @@ See [this wiki page](https://github.com/michalmonday/Arduino-CSV-Parser/wiki/Spe
 ## To do
 Check how much memory the code/sketch takes.   
 Write more tests (add some handling when provided csv string has invalid format.  
-Add "supplyChunk" method, because now the whole csv string has to be passed, passing the string by chunks will allow the program using CSV_Parser to occupy much less memory (because it won't have to store the whole string). Possibly overload "+=" operator for that purpose.    
+Update previously made tests.  
+Write examples.  
