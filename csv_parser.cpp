@@ -1,91 +1,48 @@
 #include "csv_parser.h"
 
+//#include "mem_check.h" // DELETE BEFORE UPLOAD
+
 Stream * CSV_Parser::debug_serial = &Serial;
 
-CSV_Parser::CSV_Parser(const char * s, const char * fmt, bool has_header_, char delimiter_, char quote_char_) :
-  cols_count(strlen(fmt)),
-  types(strdup(fmt)),
+
+CSV_Parser::CSV_Parser(const char * s, const char * fmt_, bool has_header_, char delimiter_, char quote_char_) :
+  rows_count(NULL), 
+  cols_count(strlen(fmt_)),
+  fmt(strdup(fmt_)),
   has_header(has_header_),
   delimiter(delimiter_),
   quote_char(quote_char_),
-  delim_chars({'\r', '\n', delimiter, 0})
-{
-
-  /*  Why count rows first instead of counting while parsing?
-      Because memory for values is dynamically allocated. Counting while parsing would require calling realloc 
-      for each parsed value, I am afraid it could be slow (if by any chance realloc moved the whole currently 
-      stored memory). Counting rows first adds some overhead time but it's not extreme (as realloc could be).
-  */
-  rows_count = countRows(s);                                  // can't be in initializer list because it relies on other members
+  delim_chars({'\r', '\n', delimiter_, 0}),
+  leftover(NULL),
+  current_col(NULL),
+  whole_csv_supplied(false),
+  //whole_csv_supplied((bool)s ? true : false), // in constructor where whole csv is not supplied at once it should be set to false
+  header_parsed(!has_header_)
+{  
   keys =   (char**)calloc(cols_count, sizeof(char*));         // calloc fills memory with 0's so then I can simply use "if(keys[i]) { do something with key[i] }"
   values = (void**)calloc(cols_count, sizeof(void*));
 
-  if (has_header) {
-    int chars_occupied = 0;
-    parseHeader(s, &chars_occupied);
-    s += chars_occupied;
-  }
-    
-  // allocate memory for values
-  for (int col = 0; col < cols_count; col++) 
-    if (fmt[col] != '-')
-      values[col] = malloc(getTypeSize(fmt[col]) * rows_count);
-
-  for (int row = 0; row < rows_count; row++) {
-    for (int col = 0; col < cols_count; col++) {
-      int val_len = 0;
-      char * val;
-      if (fmt[col] != 's') { 
-        val_len = strcspn(s, delim_chars);
-        //val = strndup(s, val_len); // available for Esp8266 but not for Arduino :(
-		val = (char*)malloc(val_len+1);
-		memcpy(val, s, val_len);
-		val[val_len] = 0;
-        removeEnclosingDoubleQuotes(val);
-      } else {
-        val = parseStringValue(s, &val_len);
-      }
-
-      saveNewValue(val, fmt[col], row, col);
-
-      s += val_len + 1;
-      free(val);
-      while(*s == '\n' || *s == '\r') s++;
-    }
-  }
+  /*mem.check("constructor");
+  mem.check("after calloc 1, should be = " + String(cols_count * sizeof(char*)));
+  mem.check("after calloc 2, should be = " + String(cols_count * sizeof(void*)));*/ 
+  if (s)
+    supplyChunk(s);
 }
 
 CSV_Parser::~CSV_Parser() {
   for (int col = 0; col < cols_count; col++) {
-    if (types[col] == 's')
+    if (fmt[col] == 's')
       for (int row = 0; row < rows_count; row++)
         free(((char**)values[col])[row]);
     
-    if (keys[col])   free(keys[col]);
-    if (values[col]) free(values[col]);
+    free(keys[col]);
+    free(values[col]);
   }
   free(keys);
   free(values);
-  free(types);
+  free(fmt);
+  free(leftover);
 }
-
-void CSV_Parser::parseHeader(const char * s, int * chars_occupied) {
-  for (int col = 0; col < cols_count; col++) {
-    int key_len = 0;
-    keys[col] = parseStringValue(s, &key_len);
-    if (types[col] == '-' || !has_header) {
-      free(keys[col]);
-      keys[col] = 0; 
-    } 
-    s += key_len + 1; 
-    *chars_occupied += key_len + 1;
-    while(*s == '\n' || *s == '\r') {
-      s++;
-      *chars_occupied += 1;
-    }
-  }    
-}
-
 
 /*  This function is not meant to properly parse string values enclosed in quotes.
     This function is meant to be used for numeric values that happen to be enclosed in quotes.
@@ -104,7 +61,7 @@ void CSV_Parser::parseHeader(const char * s, int * chars_occupied) {
     - won't include carriage-return/new-line within themselves
     Knowing this, we can parse them faster (by only checking if they start and end with quote character, and removing these characters if they're present).
 */
-void CSV_Parser::removeEnclosingDoubleQuotes(char * s) {
+/*void CSV_Parser::removeEnclosingDoubleQuotes(char * s) {
   if (*s  == quote_char) {
     // shift whole string to left
     while(*++s) *(s-1) = *s;
@@ -113,7 +70,7 @@ void CSV_Parser::removeEnclosingDoubleQuotes(char * s) {
     if (*(s-2) == quote_char) *(s-2) = 0;
   }
   // if the string didn't start with double quotes then assume it doesn't end with double quotes, so do nothing
-}
+}*/
 
 
 /*  It ensures that '\r\n' characters, delimiter and quote characters that are enclosed within string 
@@ -121,15 +78,35 @@ void CSV_Parser::removeEnclosingDoubleQuotes(char * s) {
     value and returns a pointer to it. Memory is supposed to be released outside of this function.  
 */
 char * CSV_Parser::parseStringValue(const char * s, int * chars_occupied) {
+  if (!s) return 0;
+
+  
   /*  If value is not enclosed in double quotes 
   */
   if(*s != quote_char) {
-    *chars_occupied = strcspn(s, delim_chars);
-	//return strndup(s, *chars_occupied); // available for Esp8266 but not for Arduino :(
-	char *str = (char*)malloc(*chars_occupied+1);
-	memcpy(str, s, *chars_occupied);
-	str[*chars_occupied] = 0;
-    return str;
+    char * first_delim = strpbrk(s, delim_chars);
+    int val_len = 0;
+    if (first_delim || whole_csv_supplied) {
+      if (first_delim) {
+        val_len = first_delim - s;
+        *chars_occupied = val_len + 1;
+      }
+      else {
+        val_len = strlen(s);
+        *chars_occupied = val_len;
+      }
+        
+    	//return strndup(s, *chars_occupied); // available for Esp8266 but not for Arduino :(
+      char *str = (char*)malloc(val_len + 1);
+    	memcpy(str, s, val_len);
+    	str[val_len] = 0;
+      
+      *chars_occupied += strspn(s+val_len+1, "\r\n");
+      return str;
+    }
+    // delim_chars not found in string
+    *chars_occupied = 0;
+    return 0;
   }
 
   /*  If value is enclosed in double quotes. Being enclosed in double quotes automatically 
@@ -141,15 +118,26 @@ char * CSV_Parser::parseStringValue(const char * s, int * chars_occupied) {
   const char * base = s;
 
   int len = 0; 
+  bool ending_quote_found = false;
   while(*s) {
-    if (*s == quote_char && *(s+1) != quote_char)
+    if (*s == quote_char && *(s+1) != quote_char) {
+      ending_quote_found = true;
+      *chars_occupied += 1;
       break; // end of string was found 
+    }
     
     byte to_add = (*s == quote_char && *(s+1) == quote_char) ? 2 : 1;
     s += to_add;
     *chars_occupied += to_add;
     len += 1;
   }
+
+  if (!ending_quote_found) {
+    *chars_occupied = 0;
+    return 0;
+  }
+
+  *chars_occupied += strspn(s+1, "\r\n");
 
   /*  Copy string and turn 2's of adjacent double quotes into 1's.
   */
@@ -168,20 +156,19 @@ char * CSV_Parser::parseStringValue(const char * s, int * chars_occupied) {
 
 /*  The supplied string must be the whole file, including header (if it happens to have header).  
 */
+/*
 int CSV_Parser::countRows(const char *s) {
   int count = 0;
-  const char delim_chars[4] = {'\r', '\n', delimiter, 0};
   while(*s) {
     for (int col = 0; col < cols_count; col++) {
-      int len = 0;
-      if (types[col] == 's' || (has_header && count == 0)) 
-        free(parseStringValue(s, &len));
-      else 
-        len = strcspn(s, delim_chars);
-      
-      s += len + 1; 
-      while(*s == '\n' || *s == '\r') 
-        s++; 
+      if (fmt[col] == 's' || fmt[col] == '-' || (has_header && count == 0)) {
+        int occupied_chars = 0;
+        free(parseStringValue(s, &occupied_chars));
+        s += occupied_chars;
+      } else {
+        s += strcspn(s, delim_chars) + 1;
+        s += strspn(s, "\r\n");
+      }
     }   
     count += 1;
     
@@ -189,7 +176,7 @@ int CSV_Parser::countRows(const char *s) {
       break;
   }
   return count - has_header;
-}
+}*/
 
 
 int8_t CSV_Parser::getTypeSize(char type_specifier) {
@@ -215,8 +202,8 @@ const char * CSV_Parser::getTypeName(char type_specifier) {
       case 'd': return "int16_t";
       case 'c': return "char";
       case 'x': return "hex (int32_t)"; // hex input, but it's stored as int32_t
-      case '-': return "unused";
-      case   0: return "unused";
+      case '-': return "-";
+      case   0: return "-";
       default : return "unknown";
   }
 }
@@ -243,43 +230,41 @@ void CSV_Parser::printKeys(Stream &ser) {
 int CSV_Parser::getColumnsCount() { return cols_count; }
 int CSV_Parser::getRowsCount() { return rows_count; } // excluding header
 
-void * CSV_Parser::getValues(const char * key) {
-  for (int col = 0; col < cols_count; col++) 
+/*  Get values pointer given column name (key in other words)  */
+void * CSV_Parser::operator [] (const char *key) { 
+    for (int col = 0; col < cols_count; col++) 
     if (keys[col] && !strcmp(keys[col], key))
       return values[col];
   return (void*)0;
 }
 
-void * CSV_Parser::getValues(int index)          { return index < cols_count ? values[index] : (void*)0; }
-void * CSV_Parser::operator [] (const char *key) { return getValues(key);   }
-void * CSV_Parser::operator [] (int index)       { return getValues(index); }
-
-/*
-CSV_Parser::operator String() {
-  String ret = "CSV_Parser:\n";
-  ret += "  header fields:\n";
-  for (int col = 0; col < cols_count; col++) 
-    ret += "    " + String(keys[col]) + " (" + getTypeName(types[col]) + ")\n"; 
-
-  ret += "  rows number = " + String(rows_count);
-  return ret;
-}*/
+/*  Get values pointer given column index (0 being the first column)  */
+void * CSV_Parser::operator [] (int index) { return index < cols_count ? values[index] : (void*)0; }
 
 
+/*  Prints column names, their types and all stored values.  */
 void CSV_Parser::print(Stream &ser) {
   ser.println("CSV_Parser content:");
-  ser.println("   Header:");
-  ser.print("      ");
-  for (int col = 0; col < cols_count; col++) { 
-    ser.print(keys[col] ? keys[col] : "not set"); if(col == cols_count - 1) { continue; }
-    ser.print(" | ");
+  ser.print("rows_count = ");
+  ser.print(rows_count, DEC);
+  ser.print(", cols_count = ");
+  ser.println(cols_count, DEC);
+  if (has_header) {
+    ser.println("   Header:");
+    ser.print("      ");
+    for (int col = 0; col < cols_count; col++) { 
+      ser.print(keys[col] ? keys[col] : " - "); if(col == cols_count - 1) { continue; }
+      ser.print(" | ");
+    }
+    ser.println();
+  } else {
+    ser.println("(No header)");
   }
-  ser.println();
 
   ser.println("   Types:");
   ser.print("      ");
   for (int col = 0; col < cols_count; col++) { 
-    ser.print(getTypeName(types[col])); if(col == cols_count - 1) { continue; }
+    ser.print(getTypeName(fmt[col])); if(col == cols_count - 1) { continue; }
     ser.print(" | ");
   }
   ser.println();
@@ -288,7 +273,7 @@ void CSV_Parser::print(Stream &ser) {
   for (int i = 0; i < rows_count; i++) {
     ser.print("      ");
     for (int j = 0; j < cols_count; j++) {     
-      switch(types[j]){
+      switch(fmt[j]){
           case 's': ser.print( ((char**)  values[j])[i] );       break;
           case 'f': ser.print( ((float*)  values[j])[i] );       break;
           case 'L': ser.print( ((int32_t*)values[j])[i]  , DEC); break;          
@@ -303,4 +288,103 @@ void CSV_Parser::print(Stream &ser) {
     }
     ser.println();
   }
+  uint32_t sum = 0;
+  for (int col = 0; col < cols_count; col++)
+    sum += getTypeSize(fmt[col]) * rows_count + (has_header && fmt[col] != '-' ? strlen(keys[col]) + 1 : 0);
+  ser.print("Memory occupied by values themselves = "); 
+  ser.println(sum, DEC);
+  ser.print("sizeof(CSV_Parser) = ");
+  ser.println(sizeof(CSV_Parser), DEC);
+}
+
+
+
+
+
+
+void CSV_Parser::supplyChunk(const char *s) {
+  whole_csv_supplied = false;
+
+  //Serial.println("supplyChunk s = " + String(s));
+
+  if (leftover) {
+    int leftover_len = strlen(leftover);
+    int s_len = strlen(s);
+    //Serial.println("leftover_len = " + String(leftover_len) + ", s_len = " + String(s_len));
+    leftover = (char*)realloc(leftover, leftover_len + s_len + 1);
+    //Serial.println("chunk (post realloc) = " + String(chunk));
+    strcat(leftover, s);
+    //Serial.println("post strcat");
+    s = leftover;
+    //Serial.println("if (chunk) s = " + String(s));
+  }
+
+  int chars_occupied = 0;
+  char * val = 0;
+  while (val = parseStringValue(s, &chars_occupied)) {
+    //Serial.println("rows_count = " + String(rows_count) + ", current_col = " + String(current_col) + ", val = " + String(val));
+
+    if (fmt[current_col] != '-') {
+      if (!header_parsed) {
+        keys[current_col] = strdup(val);
+      } else {
+        //mem.check("values[" + String(current_col) + "]");
+        values[current_col] = (char*)realloc(values[current_col], (rows_count+1) * getTypeSize(fmt[current_col]));
+              
+        saveNewValue(val, fmt[current_col], rows_count, current_col);
+      }
+    }
+    
+    if (++current_col == cols_count) {
+      current_col = 0;
+      if (!header_parsed) header_parsed = true;
+      else rows_count++;
+    }
+    free(val);
+    s += chars_occupied;
+    chars_occupied = 0;
+  }
+
+  if (*s && s != leftover) {
+    int new_size = strlen(s);
+    leftover = (char*)realloc(leftover, new_size + 1);    
+    memcpy(leftover, s, new_size);
+    leftover[new_size] = 0;
+
+    //Serial.println("if (*s && s != chunk) chunk = " + String(s));
+  }
+}
+
+
+CSV_Parser & CSV_Parser::operator << (const char *s) {
+  supplyChunk(s);
+  /*  Returns const reference to itself to allow chaining like:
+  cp << s << another_s << and_another_s; */
+  return *this;
+}
+
+CSV_Parser & CSV_Parser::operator << (char c) {
+  char s[2] = {c, 0};
+  supplyChunk(s);
+  return *this;
+}
+
+void CSV_Parser::parseLeftover() {
+  if (leftover) {
+    whole_csv_supplied = true;
+    int chars_occupied = 0;
+    if (char * val = parseStringValue(leftover, &chars_occupied)) {
+      if (fmt[current_col] != '-') {
+        values[current_col] = realloc(values[current_col], (rows_count+1) * getTypeSize(fmt[current_col]));
+        saveNewValue(val, fmt[current_col], rows_count, current_col);  
+      }
+      if (++current_col == cols_count) {
+        current_col = 0;
+        rows_count++;
+      }
+      free(val);
+    }
+    free(leftover);
+    leftover = 0;
+  } 
 }

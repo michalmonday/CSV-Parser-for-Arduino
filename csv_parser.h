@@ -24,28 +24,42 @@
 #include <Arduino.h>
 
 class CSV_Parser {
-    char ** keys;
-    void ** values;
-    char * types; // Example type:  s = char*, f = float, L = uint32_t, d = uint16_t etc. (see github page for full list of types)
-   
-    int rows_count, cols_count;
+  char ** keys;
+  void ** values;
+  char * fmt; // Example type:  s = char*, f = float, L = uint32_t, d = uint16_t etc. (see github page for full list of types)
+ 
+  int rows_count, cols_count;
 
-    bool has_header;
-    char delimiter;
-    char quote_char;
+  bool has_header;
+  char delimiter;
+  char quote_char;
 
-    char delim_chars[4]; // useful for parsing
-    static Stream * debug_serial;
+  char delim_chars[4]; // useful for parsing
+  static Stream * debug_serial;
 
-    void parseHeader(const char *, int * chars_occupied);
-    char * parseStringValue(const char *, int * chars_occupied);
-    void removeEnclosingDoubleQuotes(char *);
-    void saveNewValue(const char * val, char type_specifier, int row, int col);
+  bool whole_csv_supplied; // if the whole csv was supplied at once, then the last value does not have to end with "\n"
+                           // if csv was supplied by chunks then the last value must end with "\n"
+                           // this member will allow to check it throughout the class
 
-    int countRows(const char *s);
-    
-    static int8_t getTypeSize(char type_specifier);
-    static const char * getTypeName(char type_specifier); 
+  /*  Members responsible for keeping track of chunked supply of csv string.  */
+  char * leftover;        // string that wasn't parsed yet because it doesn't end with delimiter or new line
+  uint16_t current_col;
+  bool header_parsed;
+
+  /*  Private methods  */
+  char * parseStringValue(const char *, int * chars_occupied);
+  //void removeEnclosingDoubleQuotes(char *);
+  void saveNewValue(const char * val, char type_specifier, int row, int col);
+  //int countRows(const char *s);
+  
+  static int8_t getTypeSize(char type_specifier);
+  static const char * getTypeName(char type_specifier); 
+
+  /**  @brief Passes part of csv string to be parsed.  
+          Passing the string by chunks will allow the program using CSV_Parser to occupy much less memory (because it won't have to store the whole string). 
+          This function should be called repetitively until the whole csv string is supplied.  
+   @param chunk - part of the csv string (it can be incomplete value, does not have to end with delimiter, could be a single char string)  */
+  void supplyChunk(const char *s);
 public:
   /**  	
 	@param s - string containing csv   
@@ -64,11 +78,16 @@ public:
   */
   CSV_Parser(const char * s, const char * fmt, bool has_header=true, char delimiter=',', char quote_char='"');
 
-  
   /** @brief Additional constructor to allow supplying quote char as a string. Why?   
 	  Because supplied quote char is likely to be a single-quote, which would require escaping using backslash if it was supplied as char.
 	  I bet some people would rather use "'" instead of '\''   */
   CSV_Parser(const char * s, const char * fmt, bool hh, char d, const char * qc) : CSV_Parser(s, fmt, hh, d, qc[0]) {}
+
+  /** @brief Constructor for supplying csv string by chunks (using supplyChunk method).  */
+//  CSV_Parser(const char * fmt, bool has_header=true, char delimiter=',', char quote_char='"');
+
+  CSV_Parser(const char * fmt_, bool hh=true, char d=',', char qc='"') : CSV_Parser(0, fmt_, hh, d, qc) {}
+  CSV_Parser(const char * fmt_, bool hh, char d, const char * qc)      : CSV_Parser(0, fmt_, hh, d, qc[0]) {}
 
   /** @brief Releases all dynamically allocated memory.  
 	  Making values unusable once the CSV_Parser goes out of scope.  */
@@ -80,8 +99,8 @@ public:
   int getRowsCount();
   
   /**  @brief Gets values given the column key name.  
-         @param key - column name  
-         @return pointer to the first value (it must be cast by the user)   */
+       @param key - column name  
+       @return pointer to the first value (it must be cast by the user)   */
   void * getValues(const char * key);    
   
   /**  @brief Gets values given the column index.  
@@ -90,26 +109,40 @@ public:
   void * getValues(int col_index);  
   
   /**  @brief It's the same as GetValues(key) but allows to use operator instead of method call, like:  
-       int32_t * my_values = (int32_t*)cp["my_key"];  */
+              int32_t * my_values = (int32_t*)cp["my_key"];                 
+       @param key - column name   */
   void * operator [] (const char *key);
  
   /**  @brief It's the same as GetValues(col_index) but allows to use operator instead of method call, like:  
-       int32_t * my_values = (int32_t*)cp[0];  */ 
+              int32_t * my_values = (int32_t*)cp[0];  
+       @param col_index - column index (0 being the first column)   */ 
   void * operator [] (int col_index);
-  
-  //operator String ();
   
   void printKeys(Stream &ser = Serial);
   
   /**  @brief Prints whole parsed content including:  
-		- column names  
-		- column types  
-		- all parsed values  
+          		- column names  
+          		- column types  
+          		- all parsed values  
 		
-		@param ser (optional) - Stream object like "Serial" (by default) or "Serial1". 
-								For example, it allows to supply "Serial1" or an object of
-								"SoftwareSerial.h" library.  */
+		   @param ser (optional) - Stream object like "Serial" (by default) or "Serial1". 
+							For example, it allows to supply "Serial1" or an object of
+							"SoftwareSerial.h" library.  */
   void print(Stream &ser = Serial);
+  
+  /**  @brief It's the same as supplyChunk(s) but allows to use operator instead of method call, like:  
+              cp << "my_strings,my_ints\n" << "hello,1\n" << "world,2\n";  */ 
+  CSV_Parser & operator << (const char *s);
+  
+  /**  @brief Example:   
+              cp << 'a' << ',' << 'b';   */ 
+  CSV_Parser & operator << (char c);
+
+  /** @brief Forces the previously supplied (but not parsed) chunks to be parsed despite not ending with "\n" or "\r\n" or delimiter.  
+             This function should be called after full csv string is supplied with repetitive supplyChunk method calls.  
+             If the csv string ended with "\n" or "\r\n" then endChunks() call is not necessary.  
+             If the csv string did not end with "\n" or "\r\n" then endChunks() must be called, otherwise the last row won't be returned when using "GetValues".  */
+  void parseLeftover();
 
   /**  @brief If invalid parameters are supplied to this class, then debug serial is used to output error information.   
 	   This function is static, which means that it supposed to be called like:  
@@ -118,5 +151,9 @@ public:
 					"SoftwareSerial.h" library. */
   static void setDebugSerial(Stream &ser) { debug_serial = &ser; }
 };
+
+
+
+
 
 #endif
