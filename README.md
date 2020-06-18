@@ -82,6 +82,36 @@ Output:
 Notice how each character within `"sLdcfx-"` string specifies different type for each column. It is very important to set this format right. 
 We could set each solumn to be strings like "sssssss", however this would use more memory than it's really needed. If we wanted to store a large array of small numerical values (e.g. under 128), then using "c" specifier would be appropriate. See "How to specify value types" section for full list of available specifiers and their descriptions.  
 
+**Is it necessary to supply the whole string at once?**   
+No, it may be supplied in incomplete parts as shown in [this example](https://github.com/michalmonday/CSV-Parser-for-Arduino/blob/master/examples/supplying_csv_by_incomplete_parts/supplying_csv_by_incomplete_parts.ino).   
+```cpp
+/*   "sL" means "string" (char* type) and "Long" (int32_t type), for full list of types see:
+       https://github.com/michalmonday/CSV-Parser-for-Arduino#specifying-value-types   */
+  CSV_Parser cp(/*format*/ "sL");
+
+  /*CSV file:
+    my_strings,my_numbers\n
+    hello,5\n
+    world,10\n
+  */
+
+  /* File supplied in chunks: */
+  cp << "my_st" << "rings" << ",my_n";
+  cp << "umbers\nh" << "ello,5\nwor" << "ld,10\n";
+                
+  char **strings = (char**)cp["my_strings"];
+  int32_t *numbers = (int32_t*)cp["my_numbers"];
+  
+  for(int row = 0; row < cp.getRowsCount(); row++) {
+    Serial.print(row, DEC);
+    Serial.print(". String = ");
+    Serial.println(strings[row]);
+    Serial.print(row, DEC);
+    Serial.print(". Number = ");
+    Serial.println(numbers[row], DEC);
+  }
+```
+
 
 ## Things to consider  
 If CSV file doesn't contain header line, then it must be specified as 3rd argument of the constructor (see [this example](#headerless-files))  
