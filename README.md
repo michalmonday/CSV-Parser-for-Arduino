@@ -95,6 +95,16 @@ The CSV file may:
 * include mixed type of line endings ('\r\n', '\n')  
 * end with '\n' or '\r\n' but it doesn't have to  
 
+**Important - if the file does not end with "\n" (new line) then cp.parseLeftover() method must be called after supplying the whole file. Example:**      
+```cpp
+char * csv_str = "my_strings,my_floats\n"
+		 "hello,1.1\n"
+		 "world,2.2"; // last line is not ending with "\n" or "\r\n"
+		 
+CSV_Parser cp(csv_str, /*format*/ "sf"); // s = string, f = float
+cp.parseLeftover();
+```
+
 If the file does not end with "\n" then additional function must be called after supplying the whole csv:  
 ```cpp
 cp.ParseLeftover();
@@ -124,7 +134,7 @@ Notice that it's possible to customize the quote char as shown in [this section]
 ```cpp
 char * csv_str = "my_strings,my_floats\n"
 		 "hello,1.1\n"
-		 "world,2.2";
+		 "world,2.2\n";
 		 
 CSV_Parser cp(csv_str, /*format*/ "sf"); // s = string, f = float
 ```
@@ -146,7 +156,7 @@ Let's suppose that we parse the following:
 ```cpp
 char * csv_str = "my_strings,my_floats\n"
 		 "hello,1.1\n"
-		 "world,2.2";
+		 "world,2.2\n";
 		 
 CSV_Parser cp(csv_str, /*format*/ "sf"); // s = string, f = float
 ```
@@ -177,7 +187,7 @@ Delimiter is 4th parameter of the constructor. It's comma (,) by default. We can
 ```cpp
 char * csv_str = "my_strings;my_floats\n"
 		 "hello;1.1\n"
-		 "world;2.2";
+		 "world;2.2\n";
 		 
 CSV_Parser cp(csv_str, /*format*/ "sf", /*has_header*/ true, /*delimiter*/ ';');
 ```  
