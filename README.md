@@ -125,7 +125,7 @@ The CSV file may:
 * include mixed type of line endings ('\r\n', '\n')  
 * end with '\n' or '\r\n' but it doesn't have to  
 
-**Important - if the file does not end with "\n" (new line) then cp.parseLeftover() method must be called after supplying the whole file. Example:**      
+**Important - if the file does not end with "\n" (new line) then cp.parseLeftover() method must be called after supplying the whole file (regardless if it was supplied all at once or in parts). Example:**      
 ```cpp
 char * csv_str = "my_strings,my_floats\n"
 		 "hello,1.1\n"
@@ -135,10 +135,6 @@ CSV_Parser cp(csv_str, /*format*/ "sf"); // s = string, f = float
 cp.parseLeftover();
 ```
 
-If the file does not end with "\n" then additional function must be called after supplying the whole csv:  
-```cpp
-cp.ParseLeftover();
-```
 
 **What if the string itself stored in CSV contains comma (or other custom delimiter)?**  
 As described in the [RFC 4180 specification](https://tools.ietf.org/html/rfc4180) we can enclose the string using double quotes. Example csv:   
