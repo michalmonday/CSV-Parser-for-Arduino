@@ -125,10 +125,11 @@ What is this CSV parser</h1>
 </li>
 </ul>
 <p>It adheres to the <a href="https://tools.ietf.org/html/rfc4180">RFC 4180 specification</a>. <br  />
+ It was written with care to not be greedy in terms of occupied memory and parsing time. <br  />
 </p>
 <h1><a class="anchor" id="autotoc_md3"></a>
 Documentation</h1>
-<p><a href="https://michalmonday.github.io/Arduino-CSV-Parser/index.html">https://michalmonday.github.io/Arduino-CSV-Parser/index.html</a> <br  />
+<p><a href="https://michalmonday.github.io/CSV-Parser-for-Arduino/index.html">https://michalmonday.github.io/CSV-Parser-for-Arduino/index.html</a> <br  />
 </p>
 <h1><a class="anchor" id="autotoc_md4"></a>
 Motivation</h1>
@@ -139,7 +140,7 @@ Usage</h1>
 <div class="fragment"><div class="line"><span class="keywordtype">char</span> * csv_str = <span class="stringliteral">&quot;my_strings,my_longs,my_ints,my_chars,my_floats,my_hex,my_to_be_ignored\n&quot;</span></div>
 <div class="line">         <span class="stringliteral">&quot;hello,70000,140,10,3.33,FF0000,this_value_wont_be_stored\n&quot;</span></div>
 <div class="line">         <span class="stringliteral">&quot;world,80000,150,20,7.77,0000FF,this_value_wont_be_stored\n&quot;</span></div>
-<div class="line">         <span class="stringliteral">&quot;noice,90000,160,30,9.99,FFFFFF,this_value_wont_be_stored&quot;</span>;</div>
+<div class="line">         <span class="stringliteral">&quot;noice,90000,160,30,9.99,FFFFFF,this_value_wont_be_stored\n&quot;</span>;</div>
 <div class="line"> </div>
 <div class="line"><a class="code" href="class_c_s_v___parser.html">CSV_Parser</a> cp(csv_str, <span class="comment">/*format*/</span> <span class="stringliteral">&quot;sLdcfx-&quot;</span>);</div>
 <div class="line"> </div>
@@ -190,7 +191,9 @@ Things to consider</h1>
 ' but it doesn't have to <br  />
 </li>
 </ul>
-<p><b>What if the string itself stored in CSV contains comma (or other custom delimiter)?</b> <br  />
+<p>If the file does not end with "\n" then additional function must be called after supplying the whole csv: <br  />
+ </p><div class="fragment"><div class="line">cp.ParseLeftover();</div>
+</div><!-- fragment --><p><b>What if the string itself stored in CSV contains comma (or other custom delimiter)?</b> <br  />
  As described in the <a href="https://tools.ietf.org/html/rfc4180">RFC 4180 specification</a> we can enclose the string using double quotes. Example csv: <br  />
  </p><blockquote class="doxtable">
 <p>my_strings,my_ints<br  />
@@ -270,14 +273,14 @@ Custom quote character</h1>
 Checking if the file was parsed correctly</h1>
 <p>Use CSV_Parser.Print function and check serial monitor. Example: <br  />
  </p><div class="fragment"><div class="line"><a class="code" href="class_c_s_v___parser.html">CSV_Parser</a> cp(csv_str, <span class="comment">/*format*/</span> <span class="stringliteral">&quot;---L&quot;</span>);</div>
-<div class="line">cp.Print();</div>
+<div class="line">cp.print();</div>
 </div><!-- fragment --><p>It will display parsed header fields, their types and all the parsed values. Like this: <br  />
  </p><blockquote class="doxtable">
 <p><a class="el" href="class_c_s_v___parser.html">CSV_Parser</a> content: <br  />
  Header: <br  />
- my_strings | my_longs | my_ints | my_chars | my_floats | my_hex | my_to_be_ignored <br  />
+ my_strings | my_longs | my_ints | my_chars | my_floats | my_hex | - <br  />
  Types: <br  />
- char* | long | int | char | float | hex (long) | unused <br  />
+ char* | int32_t | int16_t | char | float | hex (long) | - <br  />
  Values: <br  />
  hello | 70000 | 140 | 10 | 3.33 | FF0000 | - <br  />
  world | 80000 | 150 | 20 | 7.77 | FF | - <br  />
@@ -287,19 +290,19 @@ Checking if the file was parsed correctly</h1>
 <h1><a class="anchor" id="autotoc_md13"></a>
 Testing</h1>
 <p>It was tested with Esp8266. <br  />
- <code>ESP.getFreeHeap()</code> function was used to check for possible memory leaks and to examine memory space efficiency, see <a href="https://github.com/michalmonday/Arduino-CSV-Parser/wiki/Memory-space-efficiency-test">this wiki page</a> for test details and results. <br  />
- See <a href="https://github.com/michalmonday/Arduino-CSV-Parser/wiki/Speed-test">this wiki page</a> to view results of speed test. <br  />
+ <code>ESP.getFreeHeap()</code> function was used to check for possible memory leaks and to examine memory space efficiency, see <a href="https://github.com/michalmonday/CSV-Parser-for-Arduino/wiki/Memory-space-efficiency-test">this wiki page</a> for test details and results. <br  />
+ See <a href="https://github.com/michalmonday/CSV-Parser-for-Arduino/wiki/Speed-test">this wiki page</a> to view results of speed test. <br  />
 </p>
 <h1><a class="anchor" id="autotoc_md14"></a>
 To do</h1>
 <p>Check how much memory the code/sketch takes. <br  />
- Change coding style/interface/naming to follow Arduino API style guide. <br  />
- Add <a class="el" href="keywords_8txt.html">keywords.txt</a>. <br  />
  Write more tests (add some handling when provided csv string has invalid format. <br  />
+ Update previously made tests. <br  />
+ Write examples. <br  />
  </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
-<div class="ttc" id="aclass_c_s_v___parser_html"><div class="ttname"><a href="class_c_s_v___parser.html">CSV_Parser</a></div><div class="ttdef"><b>Definition:</b> csv_parser.h:26</div></div>
+<div class="ttc" id="aclass_c_s_v___parser_html"><div class="ttname"><a href="class_c_s_v___parser.html">CSV_Parser</a></div><div class="ttdef"><b>Definition:</b> CSV_Parser.h:26</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

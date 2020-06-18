@@ -70,7 +70,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="csv__parser_8h_source.html">csv_parser.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="_c_s_v___parser_8h_source.html">CSV_Parser.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -81,6 +81,12 @@ Public Member Functions</h2></td></tr>
  Because supplied quote char is likely to be a single-quote, which would require escaping using backslash if it was supplied as char. I bet some people would rather use "'" instead of '\'' <br  />
   <a href="class_c_s_v___parser.html#a0a229060a79e48d510a3ab698adfa402">More...</a><br /></td></tr>
 <tr class="separator:a0a229060a79e48d510a3ab698adfa402"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab48c97e7d7b09990e7550f5eafbeb33e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_s_v___parser.html#ab48c97e7d7b09990e7550f5eafbeb33e">CSV_Parser</a> (const char *fmt_, bool hh=true, char d=',', char qc='&quot;') </td></tr>
+<tr class="memdesc:ab48c97e7d7b09990e7550f5eafbeb33e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for supplying csv string by chunks (using supplyChunk method). <br  />
+  <a href="class_c_s_v___parser.html#ab48c97e7d7b09990e7550f5eafbeb33e">More...</a><br /></td></tr>
+<tr class="separator:ab48c97e7d7b09990e7550f5eafbeb33e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff78e0a453cef070b9f5cd212f832bf3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_s_v___parser.html#aff78e0a453cef070b9f5cd212f832bf3">CSV_Parser</a> (const char *fmt_, bool hh, char d, const char *qc)</td></tr>
+<tr class="separator:aff78e0a453cef070b9f5cd212f832bf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e4436ea4baef41584667d55ccf31983"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_s_v___parser.html#a1e4436ea4baef41584667d55ccf31983">~CSV_Parser</a> ()</td></tr>
 <tr class="memdesc:a1e4436ea4baef41584667d55ccf31983"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all dynamically allocated memory. <br  />
  Making values unusable once the <a class="el" href="class_c_s_v___parser.html">CSV_Parser</a> goes out of scope. <br  />
@@ -92,14 +98,14 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a41ff94800b60aa976d10db7071957560"><td class="mdescLeft">&#160;</td><td class="mdescRight">Excluding header (if it was part of supplied CSV). <br  />
   <a href="class_c_s_v___parser.html#a41ff94800b60aa976d10db7071957560">More...</a><br /></td></tr>
 <tr class="separator:a41ff94800b60aa976d10db7071957560"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae18a3b9fcebec1305ba23cfe50c56575"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_s_v___parser.html#ae18a3b9fcebec1305ba23cfe50c56575">getValues</a> (const char *key)</td></tr>
-<tr class="memdesc:ae18a3b9fcebec1305ba23cfe50c56575"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets values given the column key name. <br  />
-  <a href="class_c_s_v___parser.html#ae18a3b9fcebec1305ba23cfe50c56575">More...</a><br /></td></tr>
-<tr class="separator:ae18a3b9fcebec1305ba23cfe50c56575"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b07702c6dc7233d8e7297fcf0ba99ae"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_s_v___parser.html#a6b07702c6dc7233d8e7297fcf0ba99ae">getValues</a> (int col_index)</td></tr>
-<tr class="memdesc:a6b07702c6dc7233d8e7297fcf0ba99ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets values given the column index. <br  />
-  <a href="class_c_s_v___parser.html#a6b07702c6dc7233d8e7297fcf0ba99ae">More...</a><br /></td></tr>
-<tr class="separator:a6b07702c6dc7233d8e7297fcf0ba99ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d66220e48bc0bc46428910e854fd190"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_s_v___parser.html#a9d66220e48bc0bc46428910e854fd190">getValues</a> (const char *key)</td></tr>
+<tr class="memdesc:a9d66220e48bc0bc46428910e854fd190"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets values given the column key name. <br  />
+  <a href="class_c_s_v___parser.html#a9d66220e48bc0bc46428910e854fd190">More...</a><br /></td></tr>
+<tr class="separator:a9d66220e48bc0bc46428910e854fd190"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab51ce2cb2974329038d1c86f7af5a396"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_s_v___parser.html#ab51ce2cb2974329038d1c86f7af5a396">getValues</a> (int col_index)</td></tr>
+<tr class="memdesc:ab51ce2cb2974329038d1c86f7af5a396"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets values given the column index. <br  />
+  <a href="class_c_s_v___parser.html#ab51ce2cb2974329038d1c86f7af5a396">More...</a><br /></td></tr>
+<tr class="separator:ab51ce2cb2974329038d1c86f7af5a396"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abfcc311c0f24c5a816651c0366a22979"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_s_v___parser.html#abfcc311c0f24c5a816651c0366a22979">operator[]</a> (const char *key)</td></tr>
 <tr class="memdesc:abfcc311c0f24c5a816651c0366a22979"><td class="mdescLeft">&#160;</td><td class="mdescRight">It's the same as GetValues(key) but allows to use operator instead of method call, like: <br  />
  int32_t * my_values = (int32_t*)cp["my_key"]; <br  />
@@ -116,6 +122,23 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a8945f77049c64f6a59b08c146caa04d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints whole parsed content including: <br  />
   <a href="class_c_s_v___parser.html#a8945f77049c64f6a59b08c146caa04d3">More...</a><br /></td></tr>
 <tr class="separator:a8945f77049c64f6a59b08c146caa04d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed45a6caaac8e820d7818a77a9abdf7c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_s_v___parser.html">CSV_Parser</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_s_v___parser.html#aed45a6caaac8e820d7818a77a9abdf7c">operator&lt;&lt;</a> (const char *s)</td></tr>
+<tr class="memdesc:aed45a6caaac8e820d7818a77a9abdf7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">It's the same as supplyChunk(s) but allows to use operator instead of method call, like: <br  />
+ cp &lt;&lt; "my_strings,my_ints\n" &lt;&lt; "hello,1\n" &lt;&lt; "world,2\n"; <br  />
+  <a href="class_c_s_v___parser.html#aed45a6caaac8e820d7818a77a9abdf7c">More...</a><br /></td></tr>
+<tr class="separator:aed45a6caaac8e820d7818a77a9abdf7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a376e45bf172be1016309a9c979343f3d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_s_v___parser.html">CSV_Parser</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_s_v___parser.html#a376e45bf172be1016309a9c979343f3d">operator&lt;&lt;</a> (char c)</td></tr>
+<tr class="memdesc:a376e45bf172be1016309a9c979343f3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Example: <br  />
+ cp &lt;&lt; 'a' &lt;&lt; ',' &lt;&lt; 'b'; <br  />
+  <a href="class_c_s_v___parser.html#a376e45bf172be1016309a9c979343f3d">More...</a><br /></td></tr>
+<tr class="separator:a376e45bf172be1016309a9c979343f3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafbdf5883363d81d2f494025a247a0f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_s_v___parser.html#aafbdf5883363d81d2f494025a247a0f7">parseLeftover</a> ()</td></tr>
+<tr class="memdesc:aafbdf5883363d81d2f494025a247a0f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Forces the previously supplied (but not parsed) chunks to be parsed despite not ending with "\n" or "\r\n" or delimiter. <br  />
+ This function should be called after full csv string is supplied with repetitive supplyChunk method calls. <br  />
+ If the csv string ended with "\n" or "\r\n" then endChunks() call is not necessary. <br  />
+ If the csv string did not end with "\n" or "\r\n" then endChunks() must be called, otherwise the last row won't be returned when using "GetValues". <br  />
+  <a href="class_c_s_v___parser.html#aafbdf5883363d81d2f494025a247a0f7">More...</a><br /></td></tr>
+<tr class="separator:aafbdf5883363d81d2f494025a247a0f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -128,7 +151,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="af284aab71d2ce32c42a86d69685ad121"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af284aab71d2ce32c42a86d69685ad121">&#9670;&nbsp;</a></span>CSV_Parser() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#af284aab71d2ce32c42a86d69685ad121">&#9670;&nbsp;</a></span>CSV_Parser() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -197,7 +220,7 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <a id="a0a229060a79e48d510a3ab698adfa402"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0a229060a79e48d510a3ab698adfa402">&#9670;&nbsp;</a></span>CSV_Parser() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a229060a79e48d510a3ab698adfa402">&#9670;&nbsp;</a></span>CSV_Parser() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -251,6 +274,105 @@ Static Public Member Functions</h2></td></tr>
 <p>Additional constructor to allow supplying quote char as a string. Why? <br  />
  Because supplied quote char is likely to be a single-quote, which would require escaping using backslash if it was supplied as char. I bet some people would rather use "'" instead of '\'' <br  />
  </p>
+
+</div>
+</div>
+<a id="ab48c97e7d7b09990e7550f5eafbeb33e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab48c97e7d7b09990e7550f5eafbeb33e">&#9670;&nbsp;</a></span>CSV_Parser() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">CSV_Parser::CSV_Parser </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>fmt_</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>hh</em> = <code>true</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>d</em> = <code>','</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>qc</em> = <code>'&quot;'</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructor for supplying csv string by chunks (using supplyChunk method). <br  />
+ </p>
+
+</div>
+</div>
+<a id="aff78e0a453cef070b9f5cd212f832bf3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff78e0a453cef070b9f5cd212f832bf3">&#9670;&nbsp;</a></span>CSV_Parser() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">CSV_Parser::CSV_Parser </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>fmt_</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>hh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>qc</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -313,14 +435,14 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ae18a3b9fcebec1305ba23cfe50c56575"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae18a3b9fcebec1305ba23cfe50c56575">&#9670;&nbsp;</a></span>getValues() <span class="overload">[1/2]</span></h2>
+<a id="a9d66220e48bc0bc46428910e854fd190"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d66220e48bc0bc46428910e854fd190">&#9670;&nbsp;</a></span>getValues() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void * CSV_Parser::getValues </td>
+          <td class="memname">void* CSV_Parser::getValues </td>
           <td>(</td>
           <td class="paramtype">const char *&#160;</td>
           <td class="paramname"><em>key</em></td><td>)</td>
@@ -343,14 +465,14 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a6b07702c6dc7233d8e7297fcf0ba99ae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6b07702c6dc7233d8e7297fcf0ba99ae">&#9670;&nbsp;</a></span>getValues() <span class="overload">[2/2]</span></h2>
+<a id="ab51ce2cb2974329038d1c86f7af5a396"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab51ce2cb2974329038d1c86f7af5a396">&#9670;&nbsp;</a></span>getValues() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void * CSV_Parser::getValues </td>
+          <td class="memname">void* CSV_Parser::getValues </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>col_index</em></td><td>)</td>
@@ -373,6 +495,50 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a376e45bf172be1016309a9c979343f3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a376e45bf172be1016309a9c979343f3d">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_c_s_v___parser.html">CSV_Parser</a> &amp; CSV_Parser::operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Example: <br  />
+ cp &lt;&lt; 'a' &lt;&lt; ',' &lt;&lt; 'b'; <br  />
+ </p>
+
+</div>
+</div>
+<a id="aed45a6caaac8e820d7818a77a9abdf7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed45a6caaac8e820d7818a77a9abdf7c">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_c_s_v___parser.html">CSV_Parser</a> &amp; CSV_Parser::operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>It's the same as supplyChunk(s) but allows to use operator instead of method call, like: <br  />
+ cp &lt;&lt; "my_strings,my_ints\n" &lt;&lt; "hello,1\n" &lt;&lt; "world,2\n"; <br  />
+ </p>
+
+</div>
+</div>
 <a id="abfcc311c0f24c5a816651c0366a22979"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abfcc311c0f24c5a816651c0366a22979">&#9670;&nbsp;</a></span>operator[]() <span class="overload">[1/2]</span></h2>
 
@@ -392,6 +558,13 @@ Static Public Member Functions</h2></td></tr>
 <p>It's the same as GetValues(key) but allows to use operator instead of method call, like: <br  />
  int32_t * my_values = (int32_t*)cp["my_key"]; <br  />
  </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>- column name <br  />
+ </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -413,6 +586,36 @@ Static Public Member Functions</h2></td></tr>
 
 <p>It's the same as GetValues(col_index) but allows to use operator instead of method call, like: <br  />
  int32_t * my_values = (int32_t*)cp[0]; <br  />
+ </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">col_index</td><td>- column index (0 being the first column) <br  />
+ </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aafbdf5883363d81d2f494025a247a0f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafbdf5883363d81d2f494025a247a0f7">&#9670;&nbsp;</a></span>parseLeftover()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CSV_Parser::parseLeftover </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Forces the previously supplied (but not parsed) chunks to be parsed despite not ending with "\n" or "\r\n" or delimiter. <br  />
+ This function should be called after full csv string is supplied with repetitive supplyChunk method calls. <br  />
+ If the csv string ended with "\n" or "\r\n" then endChunks() call is not necessary. <br  />
+ If the csv string did not end with "\n" or "\r\n" then endChunks() must be called, otherwise the last row won't be returned when using "GetValues". <br  />
  </p>
 
 </div>
@@ -509,8 +712,8 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li><a class="el" href="csv__parser_8h_source.html">csv_parser.h</a></li>
-<li><a class="el" href="csv__parser_8cpp.html">csv_parser.cpp</a></li>
+<li><a class="el" href="_c_s_v___parser_8h_source.html">CSV_Parser.h</a></li>
+<li><a class="el" href="_c_s_v___parser_8cpp.html">CSV_Parser.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

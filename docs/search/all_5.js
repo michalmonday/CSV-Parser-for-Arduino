@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['operator_5b_5d_9',['operator[]',['../class_c_s_v___parser.html#abfcc311c0f24c5a816651c0366a22979',1,'CSV_Parser::operator[](const char *key)'],['../class_c_s_v___parser.html#aa59219b05b949c7a2ba7abbad5f9bc8c',1,'CSV_Parser::operator[](int col_index)']]]
+  ['parseleftover_11',['parseLeftover',['../class_c_s_v___parser.html#aafbdf5883363d81d2f494025a247a0f7',1,'CSV_Parser']]],
+  ['print_12',['print',['../class_c_s_v___parser.html#a8945f77049c64f6a59b08c146caa04d3',1,'CSV_Parser']]],
+  ['printkeys_13',['printKeys',['../class_c_s_v___parser.html#a9e8b2eda58fcdd6a9e3da2f0c012e493',1,'CSV_Parser']]]
 ];
