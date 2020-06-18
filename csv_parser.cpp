@@ -327,7 +327,7 @@ void CSV_Parser::supplyChunk(const char *s) {
   int chars_occupied = 0;
   char * val = 0;
   while (val = parseStringValue(s, &chars_occupied)) {
-    Serial.println("rows_count = " + String(rows_count) + ", current_col = " + String(current_col) + ", val = " + String(val));
+    //Serial.println("rows_count = " + String(rows_count) + ", current_col = " + String(current_col) + ", val = " + String(val));
 
     if (fmt[current_col] != '-') {
       if (!header_parsed) {
@@ -347,7 +347,7 @@ void CSV_Parser::supplyChunk(const char *s) {
     }
     free(val);
     s += chars_occupied;
-	Serial.println("chars_occupied = " + String(chars_occupied));
+	//Serial.println("chars_occupied = " + String(chars_occupied));
     chars_occupied = 0;
   }
 
