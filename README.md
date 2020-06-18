@@ -230,7 +230,7 @@ CSV_Parser cp(csv_str, /*format*/ "sLdcfxs", /*has_header*/ true, /*delimiter*/ 
 
 
 ## Checking if the file was parsed correctly
-Use CSV_Parser.Print function and check serial monitor. Example:  
+Use CSV_Parser.print function and check serial monitor. Example:  
 ```cpp
 CSV_Parser cp(csv_str, /*format*/ "---L");
 cp.print();
@@ -246,6 +246,8 @@ It will display parsed header fields, their types and all the parsed values. Lik
 >      hello | 70000 | 140 | 10 | 3.33 | FF0000 | -   
 >      world | 80000 | 150 | 20 | 7.77 | FF | -  
 >      noice | 90000 | 160 | 30 | 9.99 | FFFFFF | -  
+
+**Important - cp.print() method is using "Serial" object, it assumes that "Serial.begin(baud_rate);" was previously called.**  
 
   
 ## Testing
