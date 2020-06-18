@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['setdebugserial_33',['setDebugSerial',['../class_c_s_v___parser.html#ab42cded01422708e614913e0ae1fe274',1,'CSV_Parser']]]
+  ['_7ecsv_5fparser_32',['~CSV_Parser',['../class_c_s_v___parser.html#a1e4436ea4baef41584667d55ccf31983',1,'CSV_Parser']]]
 ];
