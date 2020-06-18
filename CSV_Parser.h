@@ -147,7 +147,7 @@ public:
 	   CSV_Parser::SetDebugSerial(stream_object);  
 	   @param ser - Stream object like "Serial" (by default), "Serial1" or an object of
 					"SoftwareSerial.h" library. */
-  static void setDebugSerial(Stream &ser) { debug_serial = &ser; }
+  //static void setDebugSerial(Stream &ser) { debug_serial = &ser; }
 };
 
 

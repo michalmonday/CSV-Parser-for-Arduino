@@ -1,8 +1,8 @@
 #include "CSV_Parser.h"
 
-//#include "mem_check.h" // UNCOMMENT BEFORE UPLOAD
+//#include "mem_check.h" // COMMENT-OUT BEFORE UPLOAD
 
-Stream * CSV_Parser::debug_serial = &Serial;
+//Stream * CSV_Parser::debug_serial = &Serial;
 
 
 CSV_Parser::CSV_Parser(const char * s, const char * fmt_, bool has_header_, char delimiter_, char quote_char_) :
@@ -136,7 +136,7 @@ int8_t CSV_Parser::getTypeSize(char type_specifier) {
     case 'x': return sizeof(int32_t); // hex input is stored as long (32-bit signed number)
     case '-': return 0;   
     case   0: return 0;
-    default : debug_serial->println("CSV_Parser, wrong fmt specifier = " + String(type_specifier));
+    default : return 0; //debug_serial->println("CSV_Parser, wrong fmt specifier = " + String(type_specifier));
   }
   return 0;
 }
@@ -258,8 +258,8 @@ void CSV_Parser::supplyChunk(const char *s) {
     //debug_serial->println("leftover_len = " + String(leftover_len) + ", s_len = " + String(s_len));
     leftover = (char*)realloc(leftover, leftover_len + s_len + 1);
 	
-	if (!leftover) 
-		debug_serial->println("leftover realloc failed");
+	//if (!leftover) 
+		//debug_serial->println("leftover realloc failed");
     strcat(leftover, s);
     s = leftover;
     //debug_serial->println("merged leftover = " + String(leftover));
