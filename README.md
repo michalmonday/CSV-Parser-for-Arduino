@@ -43,7 +43,7 @@ It was written with care to not be greedy in terms of occupied memory and parsin
 ## Documentation 
 https://michalmonday.github.io/CSV-Parser-for-Arduino/index.html  
 
-
+  
 ## Motivation
 I wanted to parse [covid-19 csv](https://github.com/tomwhite/covid-19-uk-data) data and couldn't find any csv parser for Arduino. So instead of rushing with a quick/dirty solution, I decided to write something that could be reused in the future (possibly by other people too).  
 
