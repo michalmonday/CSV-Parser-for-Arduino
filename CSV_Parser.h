@@ -1,4 +1,6 @@
-/*!
+/*  https://github.com/michalmonday/CSV-Parser-for-Arduino  */
+
+/**
   @mainpage CSV Parser for Arduino
  
   @section description Description
