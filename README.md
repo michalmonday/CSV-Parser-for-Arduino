@@ -41,7 +41,7 @@ It was written with care to not be greedy in terms of occupied memory and parsin
 
 
 ## Documentation 
-https://michalmonday.github.io/Arduino-CSV-Parser/index.html  
+https://michalmonday.github.io/CSV-Parser-for-Arduino/index.html  
 
 
 ## Motivation
@@ -210,8 +210,8 @@ It will display parsed header fields, their types and all the parsed values. Lik
   
 ## Testing
 It was tested with Esp8266.  
-`ESP.getFreeHeap()` function was used to check for possible memory leaks and to examine memory space efficiency, see [this wiki page](https://github.com/michalmonday/Arduino-CSV-Parser/wiki/Memory-space-efficiency-test) for test details and results.  
-See [this wiki page](https://github.com/michalmonday/Arduino-CSV-Parser/wiki/Speed-test) to view results of speed test.  
+`ESP.getFreeHeap()` function was used to check for possible memory leaks and to examine memory space efficiency, see [this wiki page](https://github.com/michalmonday/CSV-Parser-for-Arduino/wiki/Memory-space-efficiency-test) for test details and results.  
+See [this wiki page](https://github.com/michalmonday/CSV-Parser-for-Arduino/wiki/Speed-test) to view results of speed test.  
 
 ## To do
 Check how much memory the code/sketch takes.   
