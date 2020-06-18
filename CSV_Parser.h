@@ -6,7 +6,7 @@
   @section description Description
 	It's a class to which you can supply:  
 	- csv string (including new-line characters)  
-	- [format string](#specifying-value-types) (where each letter specifies type of value for each column)  
+	- format string (where each letter specifies type of value for each column)  
 
 	Class parses that string, in other words, it extracts values, stores them and provides you with:  
 	- easily accessible set of arrays (their types are specified by the format string)  
