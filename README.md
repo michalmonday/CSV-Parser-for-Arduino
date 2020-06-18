@@ -249,14 +249,3 @@ It will display parsed header fields, their types and all the parsed values. Lik
 
 **Important - cp.print() method is using "Serial" object, it assumes that "Serial.begin(baud_rate);" was previously called.**  
 
-  
-## Testing
-It was tested with Esp8266.  
-`ESP.getFreeHeap()` function was used to check for possible memory leaks and to examine memory space efficiency, see [this wiki page](https://github.com/michalmonday/CSV-Parser-for-Arduino/wiki/Memory-space-efficiency-test) for test details and results.  
-See [this wiki page](https://github.com/michalmonday/CSV-Parser-for-Arduino/wiki/Speed-test) to view results of speed test.  
-
-## To do
-Check how much memory the code/sketch takes.   
-Write more tests (add some handling when provided csv string has invalid format.  
-Update previously made tests.  
-Write examples.  
