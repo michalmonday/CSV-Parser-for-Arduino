@@ -1,6 +1,6 @@
 #include "CSV_Parser.h"
 
-//#include "mem_check.h" // DELETE BEFORE UPLOAD
+//#include "mem_check.h" // UNCOMMENT BEFORE UPLOAD
 
 Stream * CSV_Parser::debug_serial = &Serial;
 
@@ -44,35 +44,6 @@ CSV_Parser::~CSV_Parser() {
   free(leftover);
 }
 
-/*  This function is not meant to properly parse string values enclosed in quotes.
-    This function is meant to be used for numeric values that happen to be enclosed in quotes.
-    It assumes that the only possible double quotes are at the begining and end.
-    Example:
-      
-      my_ints,my_floats\n
-      "1","3.3"\n
-      "2","6.6"
-  
-    So this function is used for any columns that are not of "s" type (e.g. floats, uint32_t, uint16_t etc.).
-    Why is that?
-    Because such values may be enclosed in quote chars but they: 
-    - won't include delimeters within themselves
-    - won't include the quote char themselves
-    - won't include carriage-return/new-line within themselves
-    Knowing this, we can parse them faster (by only checking if they start and end with quote character, and removing these characters if they're present).
-*/
-/*void CSV_Parser::removeEnclosingDoubleQuotes(char * s) {
-  if (*s  == quote_char) {
-    // shift whole string to left
-    while(*++s) *(s-1) = *s;
-
-    // remove last char if it's double quotes
-    if (*(s-2) == quote_char) *(s-2) = 0;
-  }
-  // if the string didn't start with double quotes then assume it doesn't end with double quotes, so do nothing
-}*/
-
-
 /*  It ensures that '\r\n' characters, delimiter and quote characters that are enclosed within string 
     value itself are properly parsed. It dynamically allocates memory, creates copy of parsed string 
     value and returns a pointer to it. Memory is supposed to be released outside of this function.  
@@ -82,10 +53,8 @@ char * CSV_Parser::parseStringValue(const char * s, int * chars_occupied) {
 	  *chars_occupied = 0;
 	  return 0;
   }
-
   
-  /*  If value is not enclosed in double quotes 
-  */
+  /*  If value is not enclosed in double quotes  */
   if(*s != quote_char) {
     char * first_delim = strpbrk(s, delim_chars);
     int val_len = 0;
@@ -103,8 +72,6 @@ char * CSV_Parser::parseStringValue(const char * s, int * chars_occupied) {
       char *str = (char*)malloc(val_len + 1);
     	memcpy(str, s, val_len);
     	str[val_len] = 0;
-      
-      //*chars_occupied += strspn(s + val_len, "\r\n");
       return str;
     }
     // delim_chars not found in string
@@ -113,8 +80,7 @@ char * CSV_Parser::parseStringValue(const char * s, int * chars_occupied) {
   }
 
   /*  If value is enclosed in double quotes. Being enclosed in double quotes automatically 
-      means that the total number of occupied characters is 2 more than usual.
-  */
+      means that the total number of occupied characters is 2 more than usual.  */
   *chars_occupied = 2;
   s++;
   const char * base = s;
@@ -123,21 +89,21 @@ char * CSV_Parser::parseStringValue(const char * s, int * chars_occupied) {
   bool ending_quote_found = false;
   while (char *next_quote = strchr(s, quote_char)) {
     if (*(next_quote+1) == quote_char) {
-	  s += 2;
-	  len--;
-	  continue;
-	}
+  	  s += 2;
+  	  len--;
+  	  continue;
+  	}
     ending_quote_found = true;
-	
-	*chars_occupied += next_quote - base;
-	len += next_quote - base;
-	
-	if ((*(next_quote+1) == ','))
-		*chars_occupied += 1;
-	else
-		*chars_occupied += strspn(next_quote + 1, "\r\n");
-	
-	break;
+  	
+  	*chars_occupied += next_quote - base;
+  	len += next_quote - base;
+  	
+  	if ((*(next_quote+1) == ','))
+  		*chars_occupied += 1;
+  	else
+  		*chars_occupied += strspn(next_quote + 1, "\r\n");
+  	
+  	break;
   }
 
   if (!ending_quote_found) {
@@ -158,30 +124,6 @@ char * CSV_Parser::parseStringValue(const char * s, int * chars_occupied) {
   }
   return base_new_s;
 }
-
-/*  The supplied string must be the whole file, including header (if it happens to have header).  
-*/
-/*
-int CSV_Parser::countRows(const char *s) {
-  int count = 0;
-  while(*s) {
-    for (int col = 0; col < cols_count; col++) {
-      if (fmt[col] == 's' || fmt[col] == '-' || (has_header && count == 0)) {
-        int occupied_chars = 0;
-        free(parseStringValue(s, &occupied_chars));
-        s += occupied_chars;
-      } else {
-        s += strcspn(s, delim_chars) + 1;
-        s += strspn(s, "\r\n");
-      }
-    }   
-    count += 1;
-    
-    if (*(s-1) == 0)
-      break;
-  }
-  return count - has_header;
-}*/
 
 
 int8_t CSV_Parser::getTypeSize(char type_specifier) {
@@ -318,7 +260,6 @@ void CSV_Parser::supplyChunk(const char *s) {
 	
 	if (!leftover) 
 		debug_serial->println("leftover realloc failed");
-	
     strcat(leftover, s);
     s = leftover;
     //debug_serial->println("merged leftover = " + String(leftover));
@@ -328,7 +269,6 @@ void CSV_Parser::supplyChunk(const char *s) {
   char * val = 0;
   while (val = parseStringValue(s, &chars_occupied)) {
     //debug_serial->println("rows_count = " + String(rows_count) + ", current_col = " + String(current_col) + ", val = " + String(val));
-
     if (fmt[current_col] != '-') {
       if (!header_parsed) {
         keys[current_col] = strdup(val);
@@ -354,11 +294,10 @@ void CSV_Parser::supplyChunk(const char *s) {
 	//Serial.println("if (*s && s != leftover) s = " + String(s));
 	//Serial.println("leftover = " + String(leftover));
     int new_size = strlen(s);
-	if (!leftover)
-		leftover = (char*)malloc(new_size+1);
-	memmove(leftover, s, new_size+1);
-    leftover = (char*)realloc(leftover, new_size + 1);   
-		
+	  if (!leftover)
+		  leftover = (char*)malloc(new_size+1);
+	    memmove(leftover, s, new_size+1);
+      leftover = (char*)realloc(leftover, new_size + 1);   
 	//debug_serial->println("new_size = " + String(new_size) + ", new leftover = " + String(leftover));
   }
 }
@@ -394,5 +333,5 @@ void CSV_Parser::parseLeftover() {
     }
     free(leftover);
     leftover = 0;
-  } 
+  }
 }

@@ -1,5 +1,5 @@
 /*!
-  @mainpage Arduino CSV Parser
+  @mainpage CSV Parser for Arduino
  
   @section description Description
 	It's a class to which you can supply:  
@@ -48,9 +48,7 @@ class CSV_Parser {
 
   /*  Private methods  */
   char * parseStringValue(const char *, int * chars_occupied);
-  //void removeEnclosingDoubleQuotes(char *);
   void saveNewValue(const char * val, char type_specifier, int row, int col);
-  //int countRows(const char *s);
   
   static int8_t getTypeSize(char type_specifier);
   static const char * getTypeName(char type_specifier); 
