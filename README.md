@@ -11,8 +11,7 @@
 * [Custom delimiter](#custom-delimiter)  
 * [Custom quote character](#custom-quote-character)  
 * [Checking if the file was parsed correctly](#checking-if-the-file-was-parsed-correctly)  
-* [Testing](#testing)  
-* [To do](#to-do)  
+
 
 
 ## What is CSV format
