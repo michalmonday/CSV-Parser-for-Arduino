@@ -14,7 +14,9 @@ This code prints:
 void setup() {
   Serial.begin(115200);
   delay(5000);
-
+  
+  /*   "sL" means "string" (char* type) and "Long" (int32_t type), for full list of types see:
+       https://github.com/michalmonday/CSV-Parser-for-Arduino#specifying-value-types   */
   CSV_Parser cp(/*format*/ "sL");
 
   /*CSV file:
@@ -42,5 +44,4 @@ void setup() {
 }
 
 void loop() {
-
 }

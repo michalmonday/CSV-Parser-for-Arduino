@@ -57,6 +57,13 @@ void setup() {
     Serial.print(". Number = ");
     Serial.println(numbers[row], DEC);
   }
+
+  /* 
+    If we wanted to just check if the csv was parsed properly we could use:
+    cp.print();
+
+    (assumming that "Serial.begin(baud_rate)" was previously called. Because "cp.print()" is using "Serial" object)
+  */
 }
 
 void loop() {
