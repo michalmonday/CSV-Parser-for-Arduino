@@ -1,4 +1,4 @@
-#include "csv_parser.h"
+#include "CSV_Parser.h"
 
 //#include "mem_check.h" // DELETE BEFORE UPLOAD
 
@@ -78,7 +78,10 @@ CSV_Parser::~CSV_Parser() {
     value and returns a pointer to it. Memory is supposed to be released outside of this function.  
 */
 char * CSV_Parser::parseStringValue(const char * s, int * chars_occupied) {
-  if (!s) return 0;
+  if (!s) {
+	  *chars_occupied = 0;
+	  return 0;
+  }
 
   
   /*  If value is not enclosed in double quotes 
@@ -89,7 +92,7 @@ char * CSV_Parser::parseStringValue(const char * s, int * chars_occupied) {
     if (first_delim || whole_csv_supplied) {
       if (first_delim) {
         val_len = first_delim - s;
-        *chars_occupied = val_len + 1;
+        *chars_occupied = val_len + (*first_delim == delimiter) + strspn(first_delim, "\r\n");
       }
       else {
         val_len = strlen(s);
@@ -101,7 +104,7 @@ char * CSV_Parser::parseStringValue(const char * s, int * chars_occupied) {
     	memcpy(str, s, val_len);
     	str[val_len] = 0;
       
-      *chars_occupied += strspn(s+val_len+1, "\r\n");
+      //*chars_occupied += strspn(s + val_len, "\r\n");
       return str;
     }
     // delim_chars not found in string
@@ -113,23 +116,28 @@ char * CSV_Parser::parseStringValue(const char * s, int * chars_occupied) {
       means that the total number of occupied characters is 2 more than usual.
   */
   *chars_occupied = 2;
-  
-  s += 1;
+  s++;
   const char * base = s;
 
   int len = 0; 
   bool ending_quote_found = false;
-  while(*s) {
-    if (*s == quote_char && *(s+1) != quote_char) {
-      ending_quote_found = true;
-      *chars_occupied += 1;
-      break; // end of string was found 
-    }
-    
-    byte to_add = (*s == quote_char && *(s+1) == quote_char) ? 2 : 1;
-    s += to_add;
-    *chars_occupied += to_add;
-    len += 1;
+  while (char *next_quote = strchr(s, quote_char)) {
+    if (*(next_quote+1) == quote_char) {
+	  s += 2;
+	  len--;
+	  continue;
+	}
+    ending_quote_found = true;
+	
+	*chars_occupied += next_quote - base;
+	len += next_quote - base;
+	
+	if ((*(next_quote+1) == ','))
+		*chars_occupied += 1;
+	else
+		*chars_occupied += strspn(next_quote + 1, "\r\n");
+	
+	break;
   }
 
   if (!ending_quote_found) {
@@ -137,10 +145,7 @@ char * CSV_Parser::parseStringValue(const char * s, int * chars_occupied) {
     return 0;
   }
 
-  *chars_occupied += strspn(s+1, "\r\n");
-
-  /*  Copy string and turn 2's of adjacent double quotes into 1's.
-  */
+  /*  Copy string and turn 2's of adjacent double quotes into 1's.  */
   char * new_s = (char*)malloc(len + 1);
   new_s[len] = 0;
   char * base_new_s = new_s;
@@ -322,7 +327,7 @@ void CSV_Parser::supplyChunk(const char *s) {
   int chars_occupied = 0;
   char * val = 0;
   while (val = parseStringValue(s, &chars_occupied)) {
-    //Serial.println("rows_count = " + String(rows_count) + ", current_col = " + String(current_col) + ", val = " + String(val));
+    Serial.println("rows_count = " + String(rows_count) + ", current_col = " + String(current_col) + ", val = " + String(val));
 
     if (fmt[current_col] != '-') {
       if (!header_parsed) {
@@ -342,14 +347,18 @@ void CSV_Parser::supplyChunk(const char *s) {
     }
     free(val);
     s += chars_occupied;
+	Serial.println("chars_occupied = " + String(chars_occupied));
     chars_occupied = 0;
   }
 
   if (*s && s != leftover) {
+	//Serial.println("if (*s && s != leftover) s = " + String(s));
+	//Serial.println("leftover = " + String(leftover));
     int new_size = strlen(s);
     leftover = (char*)realloc(leftover, new_size + 1);    
     memcpy(leftover, s, new_size);
     leftover[new_size] = 0;
+	//Serial.println("new leftover = " + String(leftover));
 
     //Serial.println("if (*s && s != chunk) chunk = " + String(s));
   }
