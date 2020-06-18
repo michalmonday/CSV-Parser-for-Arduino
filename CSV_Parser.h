@@ -27,6 +27,7 @@ class CSV_Parser {
   char ** keys;
   void ** values;
   char * fmt; // Example type:  s = char*, f = float, L = uint32_t, d = uint16_t etc. (see github page for full list of types)
+              // https://github.com/michalmonday/CSV-Parser-for-Arduino#specifying-value-types
  
   int rows_count, cols_count;
 
@@ -53,10 +54,11 @@ class CSV_Parser {
   static int8_t getTypeSize(char type_specifier);
   static const char * getTypeName(char type_specifier); 
 
-  /**  @brief Passes part of csv string to be parsed.  
-          Passing the string by chunks will allow the program using CSV_Parser to occupy much less memory (because it won't have to store the whole string). 
-          This function should be called repetitively until the whole csv string is supplied.  
-   @param chunk - part of the csv string (it can be incomplete value, does not have to end with delimiter, could be a single char string)  */
+  /*  Passes part of csv string to be parsed.  
+      Passing the string by chunks will allow the program using CSV_Parser to occupy much less memory (because it won't have to store the whole string). 
+      This function should be called repetitively until the whole csv string is supplied.  
+      
+      chunk - part of the csv string (it can be incomplete value, does not have to end with delimiter, could be a single char string)  */
   void supplyChunk(const char *s);
 public:
   /**  	
@@ -81,9 +83,7 @@ public:
 	  I bet some people would rather use "'" instead of '\''   */
   CSV_Parser(const char * s, const char * fmt, bool hh, char d, const char * qc) : CSV_Parser(s, fmt, hh, d, qc[0]) {}
 
-  /** @brief Constructor for supplying csv string by chunks (using supplyChunk method).  */
-//  CSV_Parser(const char * fmt, bool has_header=true, char delimiter=',', char quote_char='"');
-
+  /** @brief Constructor for supplying csv string by chunks.  */
   CSV_Parser(const char * fmt_, bool hh=true, char d=',', char qc='"') : CSV_Parser(0, fmt_, hh, d, qc) {}
   CSV_Parser(const char * fmt_, bool hh, char d, const char * qc)      : CSV_Parser(0, fmt_, hh, d, qc[0]) {}
 
