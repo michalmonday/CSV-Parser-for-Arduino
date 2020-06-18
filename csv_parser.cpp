@@ -310,32 +310,31 @@ void CSV_Parser::print(Stream &ser) {
 void CSV_Parser::supplyChunk(const char *s) {
   whole_csv_supplied = false;
 
-  //Serial.println("supplyChunk s = " + String(s));
-
   if (leftover) {
     int leftover_len = strlen(leftover);
     int s_len = strlen(s);
-    //Serial.println("leftover_len = " + String(leftover_len) + ", s_len = " + String(s_len));
+    //debug_serial->println("leftover_len = " + String(leftover_len) + ", s_len = " + String(s_len));
     leftover = (char*)realloc(leftover, leftover_len + s_len + 1);
-    //Serial.println("chunk (post realloc) = " + String(chunk));
+	
+	if (!leftover) 
+		debug_serial->println("leftover realloc failed");
+	
     strcat(leftover, s);
-    //Serial.println("post strcat");
     s = leftover;
-    //Serial.println("if (chunk) s = " + String(s));
+    //debug_serial->println("merged leftover = " + String(leftover));
   }
 
   int chars_occupied = 0;
   char * val = 0;
   while (val = parseStringValue(s, &chars_occupied)) {
-    //Serial.println("rows_count = " + String(rows_count) + ", current_col = " + String(current_col) + ", val = " + String(val));
+    //debug_serial->println("rows_count = " + String(rows_count) + ", current_col = " + String(current_col) + ", val = " + String(val));
 
     if (fmt[current_col] != '-') {
       if (!header_parsed) {
         keys[current_col] = strdup(val);
       } else {
         //mem.check("values[" + String(current_col) + "]");
-        values[current_col] = (char*)realloc(values[current_col], (rows_count+1) * getTypeSize(fmt[current_col]));
-              
+        values[current_col] = (char*)realloc(values[current_col], (rows_count+1) * getTypeSize(fmt[current_col])); 
         saveNewValue(val, fmt[current_col], rows_count, current_col);
       }
     }
@@ -347,7 +346,7 @@ void CSV_Parser::supplyChunk(const char *s) {
     }
     free(val);
     s += chars_occupied;
-	//Serial.println("chars_occupied = " + String(chars_occupied));
+	//debug_serial->println("chars_occupied = " + String(chars_occupied));
     chars_occupied = 0;
   }
 
@@ -355,12 +354,12 @@ void CSV_Parser::supplyChunk(const char *s) {
 	//Serial.println("if (*s && s != leftover) s = " + String(s));
 	//Serial.println("leftover = " + String(leftover));
     int new_size = strlen(s);
-    leftover = (char*)realloc(leftover, new_size + 1);    
-    memcpy(leftover, s, new_size);
-    leftover[new_size] = 0;
-	//Serial.println("new leftover = " + String(leftover));
-
-    //Serial.println("if (*s && s != chunk) chunk = " + String(s));
+	if (!leftover)
+		leftover = (char*)malloc(new_size+1);
+	memmove(leftover, s, new_size+1);
+    leftover = (char*)realloc(leftover, new_size + 1);   
+		
+	//debug_serial->println("new_size = " + String(new_size) + ", new leftover = " + String(leftover));
   }
 }
 
