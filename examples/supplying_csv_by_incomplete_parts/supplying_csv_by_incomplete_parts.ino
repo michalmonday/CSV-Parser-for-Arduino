@@ -1,3 +1,5 @@
+/*  Supplying csv by incomplete parts example for: https://github.com/michalmonday/CSV-Parser-for-Arduino  */
+
 #include <CSV_Parser.h>
 
 /*
