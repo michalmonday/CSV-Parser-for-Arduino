@@ -227,7 +227,7 @@ CSV_Parser cp(csv_str, /*format*/ "sLdcfxs", /*has_header*/ true, /*delimiter*/ 
 ## Checking if the file was parsed correctly
 Use CSV_Parser.print function and check serial monitor. Example:  
 ```cpp
-CSV_Parser cp(csv_str, /*format*/ "---L");
+CSV_Parser cp(csv_str, /*format*/ "sLdcfx-");
 cp.print();
 ```
 
