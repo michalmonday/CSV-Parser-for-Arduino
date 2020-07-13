@@ -4,7 +4,7 @@
 
 //#include "mem_check.h" // COMMENT-OUT BEFORE UPLOAD
 
-//Stream * CSV_Parser::debug_serial = &Serial;
+Stream * CSV_Parser::debug_serial = &Serial;
 
 
 CSV_Parser::CSV_Parser(const char * s, const char * fmt_, bool has_header_, char delimiter_, char quote_char_) :
@@ -261,7 +261,7 @@ void CSV_Parser::supplyChunk(const char *s) {
     leftover = (char*)realloc(leftover, leftover_len + s_len + 1);
 	
 	//if (!leftover) 
-		//debug_serial->println("leftover realloc failed");
+	//	debug_serial->println("leftover realloc failed");
     strcat(leftover, s);
     s = leftover;
     //debug_serial->println("merged leftover = " + String(leftover));
@@ -292,7 +292,7 @@ void CSV_Parser::supplyChunk(const char *s) {
     chars_occupied = 0;
   }
 
-  if (*s && s != leftover) {
+  if (s != leftover) {
 	//Serial.println("if (*s && s != leftover) s = " + String(s));
 	//Serial.println("leftover = " + String(leftover));
     int new_size = strlen(s);
