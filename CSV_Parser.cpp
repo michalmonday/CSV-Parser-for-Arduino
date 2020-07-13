@@ -257,9 +257,10 @@ void CSV_Parser::supplyChunk(const char *s) {
   if (leftover) {
     int leftover_len = strlen(leftover);
 	
-	// if there's no leftover and first supplied char is '\n' then it could be the case that the last char was "\r"
-	// so '\n' should be ignored
-	if (leftover_len == 0 && *s == '\n')
+	// If there's no leftover and first supplied char is '\n' then it could be the case that the last char was "\r",
+	// so '\n' should be ignored.
+	// The same applies to situation where " (quote char) was previously received and the supplied char is '\r'
+	if (leftover_len == 0 && (*s == '\n' || *s == '\r'))
 		s++;
 	
     int s_len = strlen(s);
