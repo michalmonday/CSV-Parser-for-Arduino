@@ -123,7 +123,14 @@ Programmer must:
 The CSV file may:  
 * include mixed type of line endings ('\r\n', '\n')  
 * end with '\n' or '\r\n' but it doesn't have to  
-
+  
+The CSV file cannot:  
+* have empty fields in the last column   
+Example of such invalid file:   
+> column_1,column_2\n  
+> 1,\n  
+> 2,\n  
+  
 **Important - if the file does not end with "\n" (new line) then cp.parseLeftover() method must be called after supplying the whole file (regardless if it was supplied all at once or in parts). Example:**      
 ```cpp
 char * csv_str = "my_strings,my_floats\n"
