@@ -85,8 +85,7 @@ We could set each solumn to be strings like "sssssss", however this would use mo
 **Is it necessary to supply the whole string at once?**   
 No, it may be supplied in incomplete parts as shown in [this example](https://github.com/michalmonday/CSV-Parser-for-Arduino/blob/master/examples/supplying_csv_by_incomplete_parts/supplying_csv_by_incomplete_parts.ino).   
 ```cpp
-/*   "sL" means "string" (char* type) and "Long" (int32_t type), for full list of types see:
-       https://github.com/michalmonday/CSV-Parser-for-Arduino#specifying-value-types   */
+/*   "sL" means "string" (char* type) and "Long" (int32_t type)  */
   CSV_Parser cp(/*format*/ "sL");
 
   /*CSV file:
