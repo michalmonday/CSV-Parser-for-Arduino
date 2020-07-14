@@ -6,6 +6,7 @@
 * [Usage](#usage)  
 * [Things to consider](#things-to-consider)  
 * [Specifying value types](#specifying-value-types)  
+	* [How to store unsigned types](#how-to-store-unsigned-types)  
 * [Casting returned values](#casting-returned-values)  
 * [Headerless files](#headerless-files)  
 * [Custom delimiter](#custom-delimiter)  
@@ -111,6 +112,19 @@ No, it may be supplied in incomplete parts as shown in [this example](https://gi
   }
 ```
 
+We may as well supply the csv file character by character like:  
+```cpp
+char * csv_str = "my_strings,my_floats\n"
+		 "hello,1.1\n"
+		 "world,2.2\n";
+		 
+CSV_Parser cp(/*format*/ "sf"); // s = string, f = float
+
+for (char c : csv_str) {
+   cp << c;
+}
+```
+
 
 ## Things to consider  
 If CSV file doesn't contain header line, then it must be specified as 3rd argument of the constructor (see [this example](#headerless-files))  
@@ -123,13 +137,8 @@ Programmer must:
 The CSV file may:  
 * include mixed type of line endings ('\r\n', '\n')  
 * end with '\n' or '\r\n' but it doesn't have to  
-  
-The CSV file cannot:  
-* have empty fields in the last column   
-Example of such invalid file:   
-> column_1,column_2\n  
-> 1,\n  
-> 2,\n  
+* have empty fields  
+
   
 **Important - if the file does not end with "\n" (new line) then cp.parseLeftover() method must be called after supplying the whole file (regardless if it was supplied all at once or in parts). Example:**      
 ```cpp
@@ -182,6 +191,17 @@ Possible specifiers are:
 **x** - hex      (stored as int32_t)  
 **-** (dash character) means that value is unused/not-parsed (this way memory won't be allocated for values from that column)  
 
+#### How to store unsigned types
+By preceding the integer based specifiers ("L", "d", "c", "x") with "u". 
+
+Example:  
+```cpp
+char * csv_str = "column_1,column_2\n"
+     "201,202\n"
+     "203,204\n";
+
+CSV_Parser cp(csv_str, /*format*/ "ucuc");
+``` 
 
 ## Casting returned values
 Let's suppose that we parse the following:  

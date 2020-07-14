@@ -30,6 +30,18 @@ class CSV_Parser {
   void ** values;
   char * fmt; // Example type:  s = char*, f = float, L = uint32_t, d = uint16_t etc. (see github page for full list of types)
               // https://github.com/michalmonday/CSV-Parser-for-Arduino#specifying-value-types
+  char * is_fmt_unsigned;
+
+  /* What is stored at fmt and is_fmt_unsigned?
+     
+     When supplied format is "dd", then:
+         fmt = "dd"
+         is_fmt_unsigned = {false, false}
+
+     When supplied format is "udud", then:
+         fmt = "dd"
+         is_fmt_unsigned = {true, true}
+  */
  
   int rows_count, cols_count;
 
@@ -51,10 +63,16 @@ class CSV_Parser {
 
   /*  Private methods  */
   char * parseStringValue(const char *, int * chars_occupied);
-  void saveNewValue(const char * val, char type_specifier, int row, int col);
+  void saveNewValue(const char * val, char type_specifier, int row, int col, bool is_unsigned);
   
   static int8_t getTypeSize(char type_specifier);
-  static const char * getTypeName(char type_specifier); 
+  static const char * getTypeName(char type_specifier, bool is_unsigned); 
+
+  void AssignIsFmtUnsignedArray(const char * fmt_);
+
+  /*  Helper functions useful for handling unsigned format specifiers.  */
+  static char * strdup_ignoring_u(const char *s);
+  static size_t strlen_ignoring_u(const char *s);
 
   /*  Passes part of csv string to be parsed.  
       Passing the string by chunks will allow the program using CSV_Parser to occupy much less memory (because it won't have to store the whole string). 
