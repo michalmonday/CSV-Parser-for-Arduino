@@ -120,9 +120,14 @@ char * csv_str = "my_strings,my_floats\n"
 		 
 CSV_Parser cp(/*format*/ "sf"); // s = string, f = float
 
-for (char c : csv_str) {
+for (char c : String(csv_str)) {
    cp << c;
 }
+
+/* or (to avoid using "String" object)
+for (int i = 0; i < strlen(csv_str); i++) {
+   cp << csv_str[i];
+} */
 ```
 
 
@@ -202,6 +207,8 @@ char * csv_str = "column_1,column_2\n"
 
 CSV_Parser cp(csv_str, /*format*/ "ucuc");
 ``` 
+
+See [unsigned_values example](#https://github.com/michalmonday/CSV-Parser-for-Arduino/blob/master/examples/unsigned_values/unsigned_values.ino) for more info.  
 
 ## Casting returned values
 Let's suppose that we parse the following:  
