@@ -1,8 +1,7 @@
 ## Table of contents
 * [What is CSV format](#what-is-csv-format)  
 * [What is this CSV parser](#what-is-this-csv-parser)  
-* [Documentation](#documentation)  
-* [Motivation](#motivation)  
+* [Installation](#installation)  
 * [Usage](#usage)  
 * [Things to consider](#things-to-consider)  
 * [Specifying value types](#specifying-value-types)  
@@ -12,6 +11,8 @@
 * [Custom delimiter](#custom-delimiter)  
 * [Custom quote character](#custom-quote-character)  
 * [Checking if the file was parsed correctly](#checking-if-the-file-was-parsed-correctly)  
+* [Motivation](#motivation)  
+* [Documentation](#documentation)  
 
 
 
@@ -40,12 +41,15 @@ It adheres to the [RFC 4180 specification](https://tools.ietf.org/html/rfc4180).
 It was written with care to not be greedy in terms of occupied memory and parsing time.  
 
 
-## Documentation 
-https://michalmonday.github.io/CSV-Parser-for-Arduino/index.html  
+## Installation
+In Arduino IDE select **Tools->Manage libraries**, type "csv" in the top editbox, find "CSV Parser" and press **install**.  
 
-  
-## Motivation
-I wanted to parse [covid-19 csv](https://github.com/tomwhite/covid-19-uk-data) data and couldn't find any csv parser for Arduino. So instead of rushing with a quick/dirty solution, I decided to write something that could be reused in the future (possibly by other people too).  
+![library manager image](https://raw.githubusercontent.com/michalmonday/files/master/CSV-Parser-for-Arduino/lib_mngr.png)    
+
+Then just add the following line at the top of your sketch:  
+```cpp
+#include <CSV_Parser.h>
+```
 
 
 ## Usage
@@ -277,3 +281,10 @@ It will display parsed header fields, their types and all the parsed values. Lik
 
 **Important - cp.print() method is using "Serial" object, it assumes that "Serial.begin(baud_rate);" was previously called.**  
 
+  
+## Motivation
+I wanted to parse [covid-19 csv](https://github.com/tomwhite/covid-19-uk-data) data and couldn't find any csv parser for Arduino. So instead of rushing with a quick/dirty solution, I decided to write something that could be reused in the future (possibly by other people too).  
+
+
+## Documentation 
+https://michalmonday.github.io/CSV-Parser-for-Arduino/index.html  
