@@ -240,7 +240,7 @@ CSV_Parser cp(csv_str, /*format*/ "---L", /*has_header*/ false);
 
 And then we can use the following to get the extracted values:  
 ```cpp
-long * longs = (long*)cp[3]; // 3 becuase L is at index 3 of "---L" format string
+int32_t * longs = (int32_t*)cp[3]; // 3 becuase L is at index 3 of "---L" format string
 ```
 
 
