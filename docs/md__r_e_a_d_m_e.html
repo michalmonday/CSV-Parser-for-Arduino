@@ -70,15 +70,17 @@ $(function() {
 </li>
 <li><a href="#what-is-this-csv-parser">What is this CSV parser</a> <br  />
 </li>
-<li><a href="#documentation">Documentation</a> <br  />
-</li>
-<li><a href="#motivation">Motivation</a> <br  />
+<li><a href="#installation">Installation</a> <br  />
 </li>
 <li><a href="#usage">Usage</a> <br  />
 </li>
 <li><a href="#things-to-consider">Things to consider</a> <br  />
 </li>
 <li><a href="#specifying-value-types">Specifying value types</a> <br  />
+<ul>
+<li><a href="#how-to-store-unsigned-types">How to store unsigned types</a> <br  />
+</li>
+</ul>
 </li>
 <li><a href="#casting-returned-values">Casting returned values</a> <br  />
 </li>
@@ -90,9 +92,9 @@ $(function() {
 </li>
 <li><a href="#checking-if-the-file-was-parsed-correctly">Checking if the file was parsed correctly</a> <br  />
 </li>
-<li><a href="#testing">Testing</a> <br  />
+<li><a href="#motivation">Motivation</a> <br  />
 </li>
-<li><a href="#to-do">To do</a> <br  />
+<li><a href="#documentation">Documentation</a> <br  />
 </li>
 </ul>
 <h1><a class="anchor" id="autotoc_md1"></a>
@@ -128,14 +130,14 @@ What is this CSV parser</h1>
  It was written with care to not be greedy in terms of occupied memory and parsing time. <br  />
 </p>
 <h1><a class="anchor" id="autotoc_md3"></a>
-Documentation</h1>
-<p><a href="https://michalmonday.github.io/CSV-Parser-for-Arduino/index.html">https://michalmonday.github.io/CSV-Parser-for-Arduino/index.html</a> <br  />
+Installation</h1>
+<p>In Arduino IDE select <b>Tools-&gt;Manage libraries</b>, type "csv" in the top editbox, find "CSV Parser" and press <b>install</b>. <br  />
 </p>
-<h1><a class="anchor" id="autotoc_md4"></a>
-Motivation</h1>
-<p>I wanted to parse <a href="https://github.com/tomwhite/covid-19-uk-data">covid-19 csv</a> data and couldn't find any csv parser for Arduino. So instead of rushing with a quick/dirty solution, I decided to write something that could be reused in the future (possibly by other people too). <br  />
+<p><img src="https://raw.githubusercontent.com/michalmonday/files/master/CSV-Parser-for-Arduino/lib_mngr.png" alt="library manager image" class="inline"/> <br  />
 </p>
-<h1><a class="anchor" id="autotoc_md5"></a>
+<p>Then just add the following line at the top of your sketch: <br  />
+ </p><div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="_c_s_v___parser_8h.html">CSV_Parser.h</a>&gt;</span></div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md4"></a>
 Usage</h1>
 <div class="fragment"><div class="line"><span class="keywordtype">char</span> * csv_str = <span class="stringliteral">&quot;my_strings,my_longs,my_ints,my_chars,my_floats,my_hex,my_to_be_ignored\n&quot;</span></div>
 <div class="line">         <span class="stringliteral">&quot;hello,70000,140,10,3.33,FF0000,this_value_wont_be_stored\n&quot;</span></div>
@@ -168,7 +170,48 @@ Usage</h1>
 </blockquote>
 <p>Notice how each character within <code>"sLdcfx-"</code> string specifies different type for each column. It is very important to set this format right. We could set each solumn to be strings like "sssssss", however this would use more memory than it's really needed. If we wanted to store a large array of small numerical values (e.g. under 128), then using "c" specifier would be appropriate. See "How to specify value types" section for full list of available specifiers and their descriptions. <br  />
 </p>
-<h1><a class="anchor" id="autotoc_md6"></a>
+<p><b>Is it necessary to supply the whole string at once?</b> <br  />
+ No, it may be supplied in incomplete parts as shown in <a href="https://github.com/michalmonday/CSV-Parser-for-Arduino/blob/master/examples/supplying_csv_by_incomplete_parts/supplying_csv_by_incomplete_parts.ino">this example</a>. <br  />
+ </p><div class="fragment"><div class="line"><span class="comment">/*   &quot;sL&quot; means &quot;string&quot; (char* type) and &quot;Long&quot; (int32_t type)  */</span></div>
+<div class="line">  <a class="code" href="class_c_s_v___parser.html">CSV_Parser</a> cp(<span class="comment">/*format*/</span> <span class="stringliteral">&quot;sL&quot;</span>);</div>
+<div class="line"> </div>
+<div class="line">  <span class="comment">/*CSV file:</span></div>
+<div class="line"><span class="comment">    my_strings,my_numbers\n</span></div>
+<div class="line"><span class="comment">    hello,5\n</span></div>
+<div class="line"><span class="comment">    world,10\n</span></div>
+<div class="line"><span class="comment">  */</span></div>
+<div class="line"> </div>
+<div class="line">  <span class="comment">/* File supplied in chunks: */</span></div>
+<div class="line">  cp &lt;&lt; <span class="stringliteral">&quot;my_st&quot;</span> &lt;&lt; <span class="stringliteral">&quot;rings&quot;</span> &lt;&lt; <span class="stringliteral">&quot;,my_n&quot;</span>;</div>
+<div class="line">  cp &lt;&lt; <span class="stringliteral">&quot;umbers\nh&quot;</span> &lt;&lt; <span class="stringliteral">&quot;ello,5\nwor&quot;</span> &lt;&lt; <span class="stringliteral">&quot;ld,10\n&quot;</span>;</div>
+<div class="line">                </div>
+<div class="line">  <span class="keywordtype">char</span> **strings = (<span class="keywordtype">char</span>**)cp[<span class="stringliteral">&quot;my_strings&quot;</span>];</div>
+<div class="line">  int32_t *numbers = (int32_t*)cp[<span class="stringliteral">&quot;my_numbers&quot;</span>];</div>
+<div class="line">  </div>
+<div class="line">  <span class="keywordflow">for</span>(<span class="keywordtype">int</span> row = 0; row &lt; cp.getRowsCount(); row++) {</div>
+<div class="line">    Serial.print(row, DEC);</div>
+<div class="line">    Serial.print(<span class="stringliteral">&quot;. String = &quot;</span>);</div>
+<div class="line">    Serial.println(strings[row]);</div>
+<div class="line">    Serial.print(row, DEC);</div>
+<div class="line">    Serial.print(<span class="stringliteral">&quot;. Number = &quot;</span>);</div>
+<div class="line">    Serial.println(numbers[row], DEC);</div>
+<div class="line">  }</div>
+</div><!-- fragment --><p>We may as well supply the csv file character by character like: <br  />
+ </p><div class="fragment"><div class="line"><span class="keywordtype">char</span> * csv_str = <span class="stringliteral">&quot;my_strings,my_floats\n&quot;</span></div>
+<div class="line">         <span class="stringliteral">&quot;hello,1.1\n&quot;</span></div>
+<div class="line">         <span class="stringliteral">&quot;world,2.2\n&quot;</span>;</div>
+<div class="line">         </div>
+<div class="line"><a class="code" href="class_c_s_v___parser.html">CSV_Parser</a> cp(<span class="comment">/*format*/</span> <span class="stringliteral">&quot;sf&quot;</span>); <span class="comment">// s = string, f = float</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keywordflow">for</span> (<span class="keywordtype">char</span> c : String(csv_str)) {</div>
+<div class="line">   cp &lt;&lt; c;</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">/* or (to avoid using &quot;String&quot; object)</span></div>
+<div class="line"><span class="comment">for (int i = 0; i &lt; strlen(csv_str); i++) {</span></div>
+<div class="line"><span class="comment">   cp &lt;&lt; csv_str[i];</span></div>
+<div class="line"><span class="comment">} */</span></div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md5"></a>
 Things to consider</h1>
 <p>If CSV file doesn't contain header line, then it must be specified as 3rd argument of the constructor (see <a href="#headerless-files">this example</a>) <br  />
  If CSV file is separated by other character instead of comma, then it must be specified as 4th argument of the constructor (see <a href="#custom-delimiter">this example</a>) <br  />
@@ -190,9 +233,16 @@ Things to consider</h1>
 ' or '\r<br  />
 ' but it doesn't have to <br  />
 </li>
+<li>have empty fields <br  />
+</li>
 </ul>
-<p>If the file does not end with "\n" then additional function must be called after supplying the whole csv: <br  />
- </p><div class="fragment"><div class="line">cp.ParseLeftover();</div>
+<p>**Important - if the file does not end with "\n" (new line) then cp.parseLeftover() method must be called after supplying the whole file (regardless if it was supplied all at once or in parts). Example:** <br  />
+ </p><div class="fragment"><div class="line"><span class="keywordtype">char</span> * csv_str = <span class="stringliteral">&quot;my_strings,my_floats\n&quot;</span></div>
+<div class="line">         <span class="stringliteral">&quot;hello,1.1\n&quot;</span></div>
+<div class="line">         <span class="stringliteral">&quot;world,2.2&quot;</span>; <span class="comment">// last line is not ending with &quot;\n&quot; or &quot;\r\n&quot;</span></div>
+<div class="line">         </div>
+<div class="line"><a class="code" href="class_c_s_v___parser.html">CSV_Parser</a> cp(csv_str, <span class="comment">/*format*/</span> <span class="stringliteral">&quot;sf&quot;</span>); <span class="comment">// s = string, f = float</span></div>
+<div class="line">cp.parseLeftover();</div>
 </div><!-- fragment --><p><b>What if the string itself stored in CSV contains comma (or other custom delimiter)?</b> <br  />
  As described in the <a href="https://tools.ietf.org/html/rfc4180">RFC 4180 specification</a> we can enclose the string using double quotes. Example csv: <br  />
  </p><blockquote class="doxtable">
@@ -220,11 +270,11 @@ Things to consider</h1>
 </p>
 <p>Notice that it's possible to customize the quote char as shown in <a href="#custom-quote-character">this section</a>. E.g. to use single quotes (') instead. <br  />
 </p>
-<h1><a class="anchor" id="autotoc_md7"></a>
+<h1><a class="anchor" id="autotoc_md6"></a>
 Specifying value types</h1>
 <div class="fragment"><div class="line"><span class="keywordtype">char</span> * csv_str = <span class="stringliteral">&quot;my_strings,my_floats\n&quot;</span></div>
 <div class="line">         <span class="stringliteral">&quot;hello,1.1\n&quot;</span></div>
-<div class="line">         <span class="stringliteral">&quot;world,2.2&quot;</span>;</div>
+<div class="line">         <span class="stringliteral">&quot;world,2.2\n&quot;</span>;</div>
 <div class="line">         </div>
 <div class="line"><a class="code" href="class_c_s_v___parser.html">CSV_Parser</a> cp(csv_str, <span class="comment">/*format*/</span> <span class="stringliteral">&quot;sf&quot;</span>); <span class="comment">// s = string, f = float</span></div>
 </div><!-- fragment --><p>Example above is specifying "s" (string) for the 1st column, and "f" (float) for the 2nd column. <br  />
@@ -238,18 +288,29 @@ Specifying value types</h1>
  <b>x</b> - hex (stored as int32_t) <br  />
  <b>-</b> (dash character) means that value is unused/not-parsed (this way memory won't be allocated for values from that column) <br  />
 </p>
+<h3><a class="anchor" id="autotoc_md7"></a>
+How to store unsigned types</h3>
+<p>By preceding the integer based specifiers ("L", "d", "c", "x") with "u".</p>
+<p>Example: <br  />
+ </p><div class="fragment"><div class="line"><span class="keywordtype">char</span> * csv_str = <span class="stringliteral">&quot;column_1,column_2\n&quot;</span></div>
+<div class="line">     <span class="stringliteral">&quot;201,202\n&quot;</span></div>
+<div class="line">     <span class="stringliteral">&quot;203,204\n&quot;</span>;</div>
+<div class="line"> </div>
+<div class="line"><a class="code" href="class_c_s_v___parser.html">CSV_Parser</a> cp(csv_str, <span class="comment">/*format*/</span> <span class="stringliteral">&quot;ucuc&quot;</span>);</div>
+</div><!-- fragment --><p>See <a href="https://github.com/michalmonday/CSV-Parser-for-Arduino/blob/master/examples/unsigned_values/unsigned_values.ino">unsigned_values example</a> for more info. <br  />
+</p>
 <h1><a class="anchor" id="autotoc_md8"></a>
 Casting returned values</h1>
 <p>Let's suppose that we parse the following: <br  />
  </p><div class="fragment"><div class="line"><span class="keywordtype">char</span> * csv_str = <span class="stringliteral">&quot;my_strings,my_floats\n&quot;</span></div>
 <div class="line">         <span class="stringliteral">&quot;hello,1.1\n&quot;</span></div>
-<div class="line">         <span class="stringliteral">&quot;world,2.2&quot;</span>;</div>
+<div class="line">         <span class="stringliteral">&quot;world,2.2\n&quot;</span>;</div>
 <div class="line">         </div>
 <div class="line"><a class="code" href="class_c_s_v___parser.html">CSV_Parser</a> cp(csv_str, <span class="comment">/*format*/</span> <span class="stringliteral">&quot;sf&quot;</span>); <span class="comment">// s = string, f = float</span></div>
 </div><!-- fragment --><p>To cast/retrieve the values we can use: <br  />
  </p><div class="fragment"><div class="line"><span class="keywordtype">char</span>  **strings = (<span class="keywordtype">char</span>**)cp[<span class="stringliteral">&quot;my_strings&quot;</span>];</div>
 <div class="line"><span class="keywordtype">float</span> *floats =   (<span class="keywordtype">float</span>*)cp[<span class="stringliteral">&quot;my_floats&quot;</span>];</div>
-</div><!-- fragment --><p>"x" (hex input values), should be cast as "long*" (or unsigned long*), because that's how they're stored. Casting them to "int*" would result in wrong address being computed when using <code>ints[index]</code>. <br  />
+</div><!-- fragment --><p>"x" (hex input values), should be cast as "int8_t*" (or uint8_t*), because that's how they're stored. Casting them to "int*" could result in wrong address being computed when using <code>ints[index]</code>. <br  />
 </p>
 <h1><a class="anchor" id="autotoc_md9"></a>
 Headerless files</h1>
@@ -262,7 +323,7 @@ Custom delimiter</h1>
 <p>Delimiter is 4th parameter of the constructor. It's comma (,) by default. We can customize it like this: <br  />
  </p><div class="fragment"><div class="line"><span class="keywordtype">char</span> * csv_str = <span class="stringliteral">&quot;my_strings;my_floats\n&quot;</span></div>
 <div class="line">         <span class="stringliteral">&quot;hello;1.1\n&quot;</span></div>
-<div class="line">         <span class="stringliteral">&quot;world;2.2&quot;</span>;</div>
+<div class="line">         <span class="stringliteral">&quot;world;2.2\n&quot;</span>;</div>
 <div class="line">         </div>
 <div class="line"><a class="code" href="class_c_s_v___parser.html">CSV_Parser</a> cp(csv_str, <span class="comment">/*format*/</span> <span class="stringliteral">&quot;sf&quot;</span>, <span class="comment">/*has_header*/</span> <span class="keyword">true</span>, <span class="comment">/*delimiter*/</span> <span class="charliteral">&#39;;&#39;</span>);</div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md11"></a>
@@ -271,8 +332,8 @@ Custom quote character</h1>
  </p><div class="fragment"><div class="line"><a class="code" href="class_c_s_v___parser.html">CSV_Parser</a> cp(csv_str, <span class="comment">/*format*/</span> <span class="stringliteral">&quot;sLdcfxs&quot;</span>, <span class="comment">/*has_header*/</span> <span class="keyword">true</span>, <span class="comment">/*delimiter*/</span> <span class="charliteral">&#39;,&#39;</span>, <span class="comment">/*quote_char*/</span> <span class="stringliteral">&quot;&#39;&quot;</span>);</div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md12"></a>
 Checking if the file was parsed correctly</h1>
-<p>Use CSV_Parser.Print function and check serial monitor. Example: <br  />
- </p><div class="fragment"><div class="line"><a class="code" href="class_c_s_v___parser.html">CSV_Parser</a> cp(csv_str, <span class="comment">/*format*/</span> <span class="stringliteral">&quot;---L&quot;</span>);</div>
+<p>Use <a class="el" href="class_c_s_v___parser.html#a8945f77049c64f6a59b08c146caa04d3" title="Prints whole parsed content including:">CSV_Parser.print</a> function and check serial monitor. Example: <br  />
+ </p><div class="fragment"><div class="line"><a class="code" href="class_c_s_v___parser.html">CSV_Parser</a> cp(csv_str, <span class="comment">/*format*/</span> <span class="stringliteral">&quot;sLdcfx-&quot;</span>);</div>
 <div class="line">cp.print();</div>
 </div><!-- fragment --><p>It will display parsed header fields, their types and all the parsed values. Like this: <br  />
  </p><blockquote class="doxtable">
@@ -287,22 +348,20 @@ Checking if the file was parsed correctly</h1>
  noice | 90000 | 160 | 30 | 9.99 | FFFFFF | - <br  />
  </p>
 </blockquote>
+<p><b>Important - cp.print() method is using "Serial" object, it assumes that "Serial.begin(baud_rate);" was previously called.</b> <br  />
+</p>
 <h1><a class="anchor" id="autotoc_md13"></a>
-Testing</h1>
-<p>It was tested with Esp8266. <br  />
- <code>ESP.getFreeHeap()</code> function was used to check for possible memory leaks and to examine memory space efficiency, see <a href="https://github.com/michalmonday/CSV-Parser-for-Arduino/wiki/Memory-space-efficiency-test">this wiki page</a> for test details and results. <br  />
- See <a href="https://github.com/michalmonday/CSV-Parser-for-Arduino/wiki/Speed-test">this wiki page</a> to view results of speed test. <br  />
+Motivation</h1>
+<p>I wanted to parse <a href="https://github.com/tomwhite/covid-19-uk-data">covid-19 csv</a> data and couldn't find any csv parser for Arduino. So instead of rushing with a quick/dirty solution, I decided to write something that could be reused in the future (possibly by other people too). <br  />
 </p>
 <h1><a class="anchor" id="autotoc_md14"></a>
-To do</h1>
-<p>Check how much memory the code/sketch takes. <br  />
- Write more tests (add some handling when provided csv string has invalid format. <br  />
- Update previously made tests. <br  />
- Write examples. <br  />
+Documentation</h1>
+<p><a href="https://michalmonday.github.io/CSV-Parser-for-Arduino/index.html">https://michalmonday.github.io/CSV-Parser-for-Arduino/index.html</a> <br  />
  </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
-<div class="ttc" id="aclass_c_s_v___parser_html"><div class="ttname"><a href="class_c_s_v___parser.html">CSV_Parser</a></div><div class="ttdef"><b>Definition:</b> CSV_Parser.h:26</div></div>
+<div class="ttc" id="a_c_s_v___parser_8h_html"><div class="ttname"><a href="_c_s_v___parser_8h.html">CSV_Parser.h</a></div></div>
+<div class="ttc" id="aclass_c_s_v___parser_html"><div class="ttname"><a href="class_c_s_v___parser.html">CSV_Parser</a></div><div class="ttdef"><b>Definition:</b> CSV_Parser.h:28</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
