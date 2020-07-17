@@ -229,7 +229,7 @@ char  **strings = (char**)cp["my_strings"];
 float *floats =   (float*)cp["my_floats"];
 ```
 
-"x" (hex input values), should be cast as "int8_t*" (or uint8_t*), because that's how they're stored. Casting them to "int*" could result in wrong address being computed when using `ints[index]`.  
+"x" (hex input values), should be cast as "int32_t*" (or uint32_t*), because that's how they're stored. Casting them to "int*" could result in wrong address being computed when using `ints[index]`.  
   
   
 ## Headerless files
