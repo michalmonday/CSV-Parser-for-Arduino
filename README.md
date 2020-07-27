@@ -178,6 +178,21 @@ Parser will read such file as:
 
 Notice that it's possible to customize the quote char as shown in [this section](#custom-quote-character). E.g. to use single quotes (') instead.  
 
+**Header fields leading and trailing spaces are ignored**  
+Example:  
+```cpp
+char * csv_str = "  test a  ,  test b  \n" // header names include leading and trailing spaces
+     "1,2\n"
+     "3,4\n";
+	 
+CSV_Parser cp(csv_str, "ss");
+char  **a = (char**)cp["test a"]; // notice how "test a" is used instead of "  test a  "
+char  **b = (char**)cp["test b"];
+for (int i = 0; i < cp.getRowsCount(); i++) {
+    Serial.println(a[i]);
+    Serial.println(b[i]);
+}
+```
 		  
 ## Specifying value types 
 ```cpp
