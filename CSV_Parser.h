@@ -73,6 +73,7 @@ class CSV_Parser {
   /*  Helper functions useful for handling unsigned format specifiers.  */
   static char * strdup_ignoring_u(const char *s);
   static size_t strlen_ignoring_u(const char *s);
+  static char * strdup_trimmed(const char * s);
 
   /*  Passes part of csv string to be parsed.  
       Passing the string by chunks will allow the program using CSV_Parser to occupy much less memory (because it won't have to store the whole string). 

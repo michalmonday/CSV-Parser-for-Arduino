@@ -29,6 +29,23 @@ size_t CSV_Parser::strlen_ignoring_u(const char *s) {
   return sz;
 }
 
+/*  Creates dynamically allocated copy of a string with leading and trailing space removed. 
+	Example input = "   test string    "
+	Example output = "test string"
+	
+	(it is used for saving header names)
+	*/
+char * CSV_Parser::strdup_trimmed(const char * s) {
+  s += strspn(s, " ");
+  int len = strlen(s);
+  while(isspace(s[len - 1])) 
+    --len;
+  //return strndup(s, len); // unfortunately strndup is not available in Arduino
+  char * new_s = strdup(s);
+  new_s[len] = 0;
+  return new_s;
+}
+
 /*  It populates "is_fmt_unsigned" array. To clarify:
         fmt_ = format supplied in constructor (including "u", if there are values to be stored as unsigned)
         fmt  = member, format without "u" if any was there  */
@@ -355,7 +372,7 @@ void CSV_Parser::supplyChunk(const char *s) {
     //debug_serial->println("rows_count = " + String(rows_count) + ", current_col = " + String(current_col) + ", val = " + String(val));
     if (fmt[current_col] != '-') {
       if (!header_parsed) {
-        keys[current_col] = strdup(val);
+        keys[current_col] = strdup_trimmed(val);
       } else {
         //mem.check("values[" + String(current_col) + "]");
         values[current_col] = (char*)realloc(values[current_col], (rows_count+1) * getTypeSize(fmt[current_col])); 
