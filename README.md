@@ -188,10 +188,6 @@ char * csv_str = "  test a  ,  test b  \n" // header names include leading and t
 CSV_Parser cp(csv_str, "cc");
 int8_t *a = (int8_t*)cp["test a"]; // notice how "test a" is used instead of "  test a  "
 int8_t *b = (int8_t*)cp["test b"];
-for (int i = 0; i < cp.getRowsCount(); i++) {
-    Serial.println(a[i], DEC);
-    Serial.println(b[i], DEC);
-}
 ```
 		  
 ## Specifying value types 
