@@ -185,12 +185,12 @@ char * csv_str = "  test a  ,  test b  \n" // header names include leading and t
      "1,2\n"
      "3,4\n";
 	 
-CSV_Parser cp(csv_str, "ss");
-char  **a = (char**)cp["test a"]; // notice how "test a" is used instead of "  test a  "
-char  **b = (char**)cp["test b"];
+CSV_Parser cp(csv_str, "cc");
+int8_t *a = (int8_t*)cp["test a"]; // notice how "test a" is used instead of "  test a  "
+int8_t *b = (int8_t*)cp["test b"];
 for (int i = 0; i < cp.getRowsCount(); i++) {
-    Serial.println(a[i]);
-    Serial.println(b[i]);
+    Serial.println(a[i], DEC);
+    Serial.println(b[i], DEC);
 }
 ```
 		  
