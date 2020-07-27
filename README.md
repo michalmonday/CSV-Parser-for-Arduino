@@ -182,8 +182,8 @@ Notice that it's possible to customize the quote char as shown in [this section]
 Example:  
 ```cpp
 char * csv_str = "  test a  ,  test b  \n" // header names include leading and trailing spaces
-     "1,2\n"
-     "3,4\n";
+                 "1,2\n"
+                 "3,4\n";
 	 
 CSV_Parser cp(csv_str, "cc");
 int8_t *a = (int8_t*)cp["test a"]; // notice how "test a" is used instead of "  test a  "
