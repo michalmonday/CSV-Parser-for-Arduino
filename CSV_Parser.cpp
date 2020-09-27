@@ -441,4 +441,3 @@ void CSV_Parser::parseLeftover() {
     leftover = 0;
   }
 }
-
