@@ -64,17 +64,17 @@ void CSV_Parser::AssignIsFmtUnsignedArray(const char * fmt_) {
 }
 
 CSV_Parser::CSV_Parser(const char * s, const char * fmt_, bool has_header_, char delimiter_, char quote_char_) :
+  fmt( strdup_ignoring_u(fmt_) ),
   rows_count(NULL), 
   cols_count( strlen_ignoring_u(fmt_) ),
-  fmt( strdup_ignoring_u(fmt_) ),
   has_header(has_header_),
   delimiter(delimiter_),
   quote_char(quote_char_),
   delim_chars({'\r', '\n', delimiter_, 0}),
-  leftover(NULL),
-  current_col(NULL),
   whole_csv_supplied(false),
   //whole_csv_supplied((bool)s ? true : false), // in constructor where whole csv is not supplied at once it should be set to false
+  leftover(NULL),
+  current_col(NULL),
   header_parsed(!has_header_)
 {  
   AssignIsFmtUnsignedArray(fmt_);
