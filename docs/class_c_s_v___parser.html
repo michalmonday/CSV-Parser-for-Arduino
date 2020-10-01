@@ -91,6 +91,9 @@ Public Member Functions</h2></td></tr>
  Making values unusable once the <a class="el" href="class_c_s_v___parser.html">CSV_Parser</a> goes out of scope. <br  />
   <a href="class_c_s_v___parser.html#a1e4436ea4baef41584667d55ccf31983">More...</a><br /></td></tr>
 <tr class="separator:a1e4436ea4baef41584667d55ccf31983"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac127ae6fb3f70b1a7fe841385675d2a7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_s_v___parser.html#ac127ae6fb3f70b1a7fe841385675d2a7">readSDfile</a> (const char *f_name)</td></tr>
+<tr class="memdesc:ac127ae6fb3f70b1a7fe841385675d2a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads file from SD card.  <a href="class_c_s_v___parser.html#ac127ae6fb3f70b1a7fe841385675d2a7">More...</a><br /></td></tr>
+<tr class="separator:ac127ae6fb3f70b1a7fe841385675d2a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adcf07ca7590aace95e8607ebf3ce2521"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_s_v___parser.html#adcf07ca7590aace95e8607ebf3ce2521">getColumnsCount</a> ()</td></tr>
 <tr class="separator:adcf07ca7590aace95e8607ebf3ce2521"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a41ff94800b60aa976d10db7071957560"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_s_v___parser.html#a41ff94800b60aa976d10db7071957560">getRowsCount</a> ()</td></tr>
@@ -661,6 +664,34 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac127ae6fb3f70b1a7fe841385675d2a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac127ae6fb3f70b1a7fe841385675d2a7">&#9670;&nbsp;</a></span>readSDfile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CSV_Parser::readSDfile </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>f_name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reads file from SD card. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f_name</td><td>- file name (provided file must have format that was supplied in <a class="el" href="class_c_s_v___parser.html">CSV_Parser</a> constructor) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if file could be read, false if not. It requires previously calling "SD.begin()". <br  />
+ </dd></dl>
 
 </div>
 </div>

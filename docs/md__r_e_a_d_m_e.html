@@ -270,7 +270,16 @@ Things to consider</h1>
 </p>
 <p>Notice that it's possible to customize the quote char as shown in <a href="#custom-quote-character">this section</a>. E.g. to use single quotes (') instead. <br  />
 </p>
-<h1><a class="anchor" id="autotoc_md6"></a>
+<p><b>Header fields leading and trailing spaces are ignored</b> <br  />
+ Example: <br  />
+ </p><div class="fragment"><div class="line"><span class="keywordtype">char</span> * csv_str = <span class="stringliteral">&quot;  test a  ,  test b  \n&quot;</span> <span class="comment">// header names include leading and trailing spaces</span></div>
+<div class="line">                 <span class="stringliteral">&quot;1,2\n&quot;</span></div>
+<div class="line">                 <span class="stringliteral">&quot;3,4\n&quot;</span>;</div>
+<div class="line">     </div>
+<div class="line"><a class="code" href="class_c_s_v___parser.html">CSV_Parser</a> cp(csv_str, <span class="stringliteral">&quot;cc&quot;</span>);</div>
+<div class="line">int8_t *a = (int8_t*)cp[<span class="stringliteral">&quot;test a&quot;</span>]; <span class="comment">// notice how &quot;test a&quot; is used instead of &quot;  test a  &quot;</span></div>
+<div class="line">int8_t *b = (int8_t*)cp[<span class="stringliteral">&quot;test b&quot;</span>];</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md6"></a>
 Specifying value types</h1>
 <div class="fragment"><div class="line"><span class="keywordtype">char</span> * csv_str = <span class="stringliteral">&quot;my_strings,my_floats\n&quot;</span></div>
 <div class="line">         <span class="stringliteral">&quot;hello,1.1\n&quot;</span></div>
