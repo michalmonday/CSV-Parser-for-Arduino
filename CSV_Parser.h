@@ -111,6 +111,12 @@ public:
   /** @brief Releases all dynamically allocated memory.  
 	  Making values unusable once the CSV_Parser goes out of scope.  */
   ~CSV_Parser();
+
+  /** @brief Reads file from SD card. 
+      @param f_name - file name (provided file must have format that was supplied in CSV_Parser constructor)
+      @return True if file could be read, false if not.
+    It requires previously calling "SD.begin()".  */
+  bool readSDfile(const char *f_name);
   
   int getColumnsCount();
   

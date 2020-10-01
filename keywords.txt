@@ -18,6 +18,7 @@ print	KEYWORD2
 printKeys	KEYWORD2
 setDebugSerial	KEYWORD2
 parseLeftover	KEYWORD2
+readSDfile	KEYWORD2
 
 ######################################
 # Constants (LITERAL1)

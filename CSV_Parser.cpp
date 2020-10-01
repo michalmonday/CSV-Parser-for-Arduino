@@ -1,6 +1,7 @@
 /*  https://github.com/michalmonday/CSV-Parser-for-Arduino  */
 
 #include "CSV_Parser.h"
+#include <SD.h>
 
 //#include "mem_check.h" // COMMENT-OUT BEFORE UPLOAD
 
@@ -102,6 +103,24 @@ CSV_Parser::~CSV_Parser() {
   free(values);
   free(fmt);
   free(leftover);
+}
+
+bool CSV_Parser::readSDfile(const char *f_name) {
+  // open the file. note that only one file can be open at a time,
+  // so you have to close this one before opening another.
+  File csv_file = SD.open(f_name);
+  if (!csv_file) 
+    return false;
+    
+  // read file and supply it to csv parser
+  while (csv_file.available())
+    *this << csv_file.read();
+  
+  csv_file.close();
+  
+  // ensure that the last value of the file is parsed (even if the file doesn't end with '\n')
+  parseLeftover();
+  return true;
 }
 
 /*  It ensures that '\r\n' characters, delimiter and quote characters that are enclosed within string 
