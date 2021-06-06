@@ -36,7 +36,7 @@ void setup() {
 
 
   CSV_Parser cp(/*format*/ "dd", /*has_header*/ true, /*delimiter*/ ',');
-  cp.readSDfile("file.csv"); // this wouldn't work if SD.begin wasn't called before
+  cp.readSDfile("/file.csv"); // this wouldn't work if SD.begin wasn't called before
 
   int16_t *column_1 = (int16_t*)cp["column_1"];
   int16_t *column_2 = (int16_t*)cp["column_2"];
