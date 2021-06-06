@@ -36,22 +36,27 @@ void setup() {
 
 
   CSV_Parser cp(/*format*/ "dd", /*has_header*/ true, /*delimiter*/ ',');
-  cp.readSDfile("/file.csv"); // this wouldn't work if SD.begin wasn't called before
 
-  int16_t *column_1 = (int16_t*)cp["column_1"];
-  int16_t *column_2 = (int16_t*)cp["column_2"];
+  // The line below (readSDfile) wouldn't work if SD.begin wasn't called before.
+  // readSDfile can be used as conditional, it returns 'false' if the file does not exist.
+  if (cp.readSDfile("/file.csv")) {
+    int16_t *column_1 = (int16_t*)cp["column_1"];
+    int16_t *column_2 = (int16_t*)cp["column_2"];
 
-  if (column_1 && column_2) {
-    for(int row = 0; row < cp.getRowsCount(); row++) {
-      Serial.print("row = ");
-      Serial.print(row, DEC);
-      Serial.print(", column_1 = ");
-      Serial.print(column_1[row], DEC);
-      Serial.print(", column_2 = ");
-      Serial.println(column_2[row], DEC);
+    if (column_1 && column_2) {
+      for(int row = 0; row < cp.getRowsCount(); row++) {
+        Serial.print("row = ");
+        Serial.print(row, DEC);
+        Serial.print(", column_1 = ");
+        Serial.print(column_1[row], DEC);
+        Serial.print(", column_2 = ");
+        Serial.println(column_2[row], DEC);
+      }
+    } else {
+      Serial.println("ERROR: At least 1 of the columns was not found, something went wrong.");
     }
   } else {
-    Serial.println("At least 1 of the columns was not found, something went wrong.");
+    Serial.println("ERROR: File called '/file.csv' does not exist...");
   }
 
   // output parsed values (allows to check that the file was parsed correctly)
