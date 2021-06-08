@@ -55,12 +55,13 @@ void setup() {
     } else {
       Serial.println("ERROR: At least 1 of the columns was not found, something went wrong.");
     }
+    
+    // output parsed values (allows to check that the file was parsed correctly)
+    cp.print(); // assumes that "Serial.begin()" was called before (otherwise it won't work)
+    
   } else {
     Serial.println("ERROR: File called '/file.csv' does not exist...");
   }
-
-  // output parsed values (allows to check that the file was parsed correctly)
-  cp.print(); // assumes that "Serial.begin()" was called before (otherwise it won't work)
 }
 
 void loop() {
