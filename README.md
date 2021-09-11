@@ -11,6 +11,7 @@
 * [Custom delimiter](#custom-delimiter)  
 * [Custom quote character](#custom-quote-character)  
 * [Checking if the file was parsed correctly](#checking-if-the-file-was-parsed-correctly)  
+* [Troubleshooting](#troubleshooting)  
 * [Motivation](#motivation)  
 * [Documentation](#documentation)  
 
@@ -292,6 +293,14 @@ It will display parsed header fields, their types and all the parsed values. Lik
 
 **Important - cp.print() method is using "Serial" object, it assumes that "Serial.begin(baud_rate);" was previously called.**  
 
+## Troubleshooting  
+
+Platformio users reported compilation issues due to SD library import by the CSV_Parser.cpp file. Since 0.2.1 version of this library, the SD import can be disabled by placing `#define CSV_PARSER_DONT_IMPORT_SD` above (it won't work if it's below) the CSV_Parser library import like this:  
+
+```cpp
+#define CSV_PARSER_DONT_IMPORT_SD
+#include <CSV_Parser.h>
+```
   
 ## Motivation
 I wanted to parse [covid-19 csv](https://github.com/tomwhite/covid-19-uk-data) data and couldn't find any csv parser for Arduino. So instead of rushing with a quick/dirty solution, I decided to write something that could be reused in the future (possibly by other people too).  

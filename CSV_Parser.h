@@ -116,7 +116,10 @@ public:
       @param f_name - file name (provided file must have format that was supplied in CSV_Parser constructor)
       @return True if file could be read, false if not.
     It requires previously calling "SD.begin()".  */
+
+#ifndef CSV_PARSER_DONT_IMPORT_SD
   bool readSDfile(const char *f_name);
+#endif
   
   int getColumnsCount();
   
