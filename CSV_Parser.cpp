@@ -106,6 +106,7 @@ CSV_Parser::~CSV_Parser() {
   free(values);
   free(fmt);
   free(leftover);
+  free(is_fmt_unsigned);
 }
 
 #ifndef CSV_PARSER_DONT_IMPORT_SD
