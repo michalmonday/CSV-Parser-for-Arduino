@@ -69,7 +69,7 @@ char    *chars =             (char*)cp["my_chars"];
 float   *floats =           (float*)cp["my_floats"];
 int32_t *longs_from_hex = (int32_t*)cp["my_hex"];    // CSV_Parser stores hex as longs (casting to int* would point to wrong address when ints[ind] is used)
 
-for (int i = 0; i < cp.GetRowsCount(); i++) {
+for (int i = 0; i < cp.getRowsCount(); i++) {
     Serial.print(strings[i]);             Serial.print(" - ");
     Serial.print(longs[i], DEC);          Serial.print(" - ");
     Serial.print(ints[i], DEC);           Serial.print(" - ");
