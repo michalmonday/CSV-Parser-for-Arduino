@@ -85,7 +85,7 @@ Output:
 > noice - 90000 - 160 - 20 - 9.99 - FFFFFF   
 
 Notice how each character within `"sLdcfx-"` string specifies different type for each column. It is very important to set this format right. 
-We could set each solumn to be strings like "sssssss", however this would use more memory than it's really needed. If we wanted to store a large array of small numerical values (e.g. under 128), then using "c" specifier would be appropriate. See "How to specify value types" section for full list of available specifiers and their descriptions.  
+We could set each solumn to be strings like "sssssss", however this would use more memory than it's really needed. If we wanted to store a large array of small numerical values (e.g. under 128), then using "c" specifier would be appropriate. See [Specifying value types](#specifying-value-types) section for full list of available specifiers and their descriptions.  
 
 **Is it necessary to supply the whole string at once?**   
 No, it may be supplied in incomplete parts as shown in [this example](https://github.com/michalmonday/CSV-Parser-for-Arduino/blob/master/examples/supplying_csv_by_incomplete_parts/supplying_csv_by_incomplete_parts.ino).   
@@ -203,16 +203,22 @@ CSV_Parser cp(csv_str, /*format*/ "sf"); // s = string, f = float
 Example above is specifying "s" (string) for the 1st column, and "f" (float) for the 2nd column.   
 
 Possible specifiers are:   
-**s** - string   (C-like string, not a "String" Arduino object, just a char pointer, terminated by 0)  
-**f** - float  
-**L** - int32_t  (32-bit signed value, can't be used for values over 2147483647)  
-**d** - int16_t  (16-bit signed value, can't be used for values over 32767)  
-**c** - char     (8-bit signed value, can't be used for values over 127)  
-**x** - hex      (stored as int32_t)  
-**-** (dash character) means that value is unused/not-parsed (this way memory won't be allocated for values from that column)  
+| Specifier | Type | Description |
+| --- | --- | --- |
+| **s** | string (char\*) |  C-like string, not a "String" Arduino object. |
+| **f** | float |  
+| **L** | int32_t | 32-bit signed value, value range: -2,147,483,648 to 2,147,483,647. |
+| **d** | int16_t | 16-bit signed value, value range: -32,768 to 32,767. |
+| **c** | char |    8-bit signed value, value range: -128 to 127. |
+| **x** | int32_t | Expects hexadecimal string (will store "10" or "0x10" csv as 16). |
+| **-** |  | Dash character means that value is unused/not-parsed, this way memory won't be allocated for values from that column. |
+| **uL** | uint32_t | 32-bit unsigned value, value range: 0 to 4,294,967,295. |
+| **ud** | uint16_t | 16-bit unsigned value, value range: 0 to 65,535. | 
+| **uc** | uint8_t |  8-bit unsigned value, value range: 0 to 255. |
+| **ux** | uint32_t | Expects hexadecimal string (will store "10" or "0x10" csv as 16). |
 
 #### How to store unsigned types
-By preceding the integer based specifiers ("L", "d", "c", "x") with "u". 
+As shown in the table above, unsigned type specifiers are made by preceding the integer based specifiers ("L", "d", "c", "x") with "u". 
 
 Example:  
 ```cpp
