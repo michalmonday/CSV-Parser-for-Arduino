@@ -3,6 +3,7 @@
 * [What is this CSV parser](#what-is-this-csv-parser)  
 * [Installation](#installation)  
 * [Usage](#usage)  
+* [Examples](#examples)  
 * [Things to consider](#things-to-consider)  
 * [Specifying value types](#specifying-value-types)  
 	* [How to store unsigned types](#how-to-store-unsigned-types)  
@@ -133,6 +134,16 @@ for (int i = 0; i < strlen(csv_str); i++) {
    cp << csv_str[i];
 } */
 ```
+
+
+## Examples
+Examples directory contains examples showing:  
+* [basic usage](https://github.com/michalmonday/CSV-Parser-for-Arduino/tree/master/examples/basic_usage)  
+* [how to handle unsigned types](https://github.com/michalmonday/CSV-Parser-for-Arduino/tree/master/examples/unsigned_values)   
+* [how to supply csv by incomplete parts](https://github.com/michalmonday/CSV-Parser-for-Arduino/tree/master/examples/supplying_csv_by_incomplete_parts)   
+* [how to read csv file from a PC (using provided python script)](https://github.com/michalmonday/CSV-Parser-for-Arduino/tree/master/examples/reading_from_computer_python)  
+* [how to read csv file from SD card](https://github.com/michalmonday/CSV-Parser-for-Arduino/tree/master/examples/reading_from_sd_card)   
+
 
 
 ## Things to consider  
