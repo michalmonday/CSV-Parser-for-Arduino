@@ -88,6 +88,8 @@ Output:
 Notice how each character within `"sLdcfx-"` string specifies different type for each column. It is very important to set this format right. 
 We could set each solumn to be strings like "sssssss", however this would use more memory than it's really needed. If we wanted to store a large array of small numerical values (e.g. under 128), then using "c" specifier would be appropriate. See [Specifying value types](#specifying-value-types) section for full list of available specifiers and their descriptions.  
 
+![image didnt load](./images/format_string.png)  
+
 **Is it necessary to supply the whole string at once?**   
 No, it may be supplied in incomplete parts as shown in [this example](https://github.com/michalmonday/CSV-Parser-for-Arduino/blob/master/examples/supplying_csv_by_incomplete_parts/supplying_csv_by_incomplete_parts.ino).   
 ```cpp
