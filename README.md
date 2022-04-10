@@ -220,7 +220,7 @@ Possible specifiers are:
 | --- | --- | --- |
 | **s** | string (char\*) |  C-like string, not a "String" Arduino object. |
 | **f** | float |  
-| **L** | int32_t | 32-bit signed value, value range: -2,147,483,648 to 2,147,483,647. |
+| **L** | int32_t | 32-bit signed value, value range: -2,147,483,648 to 2,147,483,647. Capital L is used because lowercase "l" looks like number one "1". |
 | **d** | int16_t | 16-bit signed value, value range: -32,768 to 32,767. |
 | **c** | char |    8-bit signed value, value range: -128 to 127. |
 | **x** | int32_t | Expects hexadecimal string (will store "10" or "0x10" csv as 16). |
