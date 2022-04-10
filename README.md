@@ -42,6 +42,8 @@ Class parses that string, in other words, it extracts values, stores them and pr
 It adheres to the [RFC 4180 specification](https://tools.ietf.org/html/rfc4180).  
 It was written with care to not be greedy in terms of occupied memory and parsing time.  
 
+![image didnt load](./images/working_principle.png)  
+
 
 ## Installation
 In Arduino IDE select **Tools->Manage libraries**, type "csv" in the top editbox, find "CSV Parser" and press **install**.  
