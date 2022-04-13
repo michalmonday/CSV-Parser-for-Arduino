@@ -142,7 +142,7 @@ void expected_numeric_values_test(const TestData &td) {
 
 
 void unsigned_values_test() {
-  Serial.println("Testing unsigned values");
+  Serial.println(F("Testing unsigned values"));
   static const char * csv_str = "bytes,words,dwords\n"
                                 "255,65535,4294967295\n"
                                 "254,65534,4294967294\n";
@@ -155,7 +155,7 @@ void unsigned_values_test() {
   assert(words[0] == 65535 && words[1] == 65534);
   assert(dwords[0] == 4294967295L && dwords[1] == 4294967294L);
 
-  Serial.println("Testing unsigned values (with signed value between)");
+  Serial.println(F("Testing unsigned values (with signed value between)"));
   static const char * csv_str_2 = "bytes,signed,dwords\n"
                                   "255,1,4294967295\n"
                                   "254,1,4294967294\n";                            
@@ -170,7 +170,7 @@ void unsigned_values_test() {
 }
 
 void chunked_supply_test() {
-  Serial.println("Chunked supply test");
+  Serial.println(F("Chunked supply test"));
   CSV_Parser cp("ddd", /*has_header*/ false, /*delimiter*/ ',', /*quote_char*/ "'");
   
   // closing double quote and comma is supplied at once
@@ -182,21 +182,27 @@ void chunked_supply_test() {
   // opening quote is supplied alone
   cp << "201," << "'" << "202',203\n";
 
+  // supplying different types
+  cp << 301 << "," << 302L << "," << '3' << String("03") << "\n";
+  
   int16_t * first = (int16_t*)cp[0];
   int16_t * second = (int16_t*)cp[1];
   int16_t * third = (int16_t*)cp[2];
   if (!first || !second || !third) {
-    Serial.println("One of 'first', 'second', 'third' was not retrieved.");
+    Serial.println(F("One of 'first', 'second', 'third' was not retrieved."));
   }
 
   if (first[0] != 101 ||
       first[1] != 201 ||
+      first[2] != 301 ||
       second[0] != 102 ||
       second[1] != 202 ||
+      second[2] != 302 ||
       third[0] != 103 ||
-      third[1] != 203 
+      third[1] != 203 ||
+      third[2] != 303 
      ){
-    Serial.println("Chunked supply test FAILED");
+    Serial.println(F("Chunked supply test FAILED"));
     cp.print();
   }
 }
@@ -223,7 +229,7 @@ void setup() {
   chunked_supply_test();
   tests_done++;
 
-  Serial.print("Tests done = "); 
+  Serial.print(F("Tests done = ")); 
   Serial.println(tests_done, DEC);
 }
 
@@ -237,12 +243,12 @@ void loop() {
 // handle diagnostic informations given by assertion and abort program execution:
 void __assert(const char *__func, const char *__file, int __lineno, const char *__sexp) {
     // transmit diagnostic informations through serial link. 
-    Serial.println("\n\n\n[FAIL]");
+    Serial.println(F("\n\n\n[FAIL]"));
     Serial.println(__func);
     Serial.println(__file);
     Serial.println(__lineno, DEC);
     Serial.println(__sexp);
-    Serial.println("\n");
+    Serial.println(F("\n"));
     Serial.flush();
     // abort program execution.
 

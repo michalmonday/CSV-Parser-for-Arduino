@@ -120,7 +120,7 @@ bool CSV_Parser::readSDfile(const char *f_name) {
     
   // read file and supply it to csv parser
   while (csv_file.available())
-    *this << csv_file.read();
+    *this << (char)csv_file.read();
   
   csv_file.close();
   
@@ -440,6 +440,12 @@ CSV_Parser & CSV_Parser::operator << (const char *s) {
   /*  Returns const reference to itself to allow chaining like:
   cp << s << another_s << and_another_s; */
   return *this;
+}
+
+CSV_Parser & CSV_Parser::operator << (String s) {
+  supplyChunk(s.c_str());
+  return *this;
+  /* return *this << s.c_str(); */
 }
 
 CSV_Parser & CSV_Parser::operator << (char c) {

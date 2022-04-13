@@ -139,6 +139,27 @@ for (int i = 0; i < strlen(csv_str); i++) {
 } */
 ```
 
+Since version 1.0.0, we can supply various types:  
+```cpp
+// original csv file = "101,102,103\n"
+// how we could supply it:
+cp << '1' << 0 << "1";
+cp << ",";
+cp << String(102) + ",103\n";
+```
+Floats can be supplied as well. In general, any types can be supplied, the principle is: if the type isn't "String", "char \*" or "char", then the String(supplied_value) will be appended (before being parsed and stored as a type specified in the format string).   
+
+**Important**  
+Arduino built-in File.read() method returns an integer (instead of a char). Therefore, it's important to cast its return before supplying it to CSV_Parser object, like:  
+```cpp
+File csv_file = SD.open(f_name); // or FFat.open(f_name);
+while (csv_file.available()) {
+    cp << (char)csv_file.read();
+}
+```
+Without `(char)`, the string representation of ascii number would be stored.  
+Before the 1.0.0 version, the `cp << 97;` expression would append letter 'a' (because '97' stands for 'a' in ascii table). From 1.0.0 version onwards, the `cp << 97;` is equivalent to `cp << String(97);`, it will append '97' instead of 'a'. That is correct behaviour in my opinion, however due to design of Arduino built-in "File.read()" method, which returns an integer, it is necessary to cast it's return (with `(char)csv_file.read()` as shown above), and problems may occur if some existing code (using this library) doesn't explicitly cast it.  
+
 
 ## Examples
 Examples directory contains examples showing:  

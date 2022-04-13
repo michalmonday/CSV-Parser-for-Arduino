@@ -161,10 +161,25 @@ public:
   /**  @brief It's the same as supplyChunk(s) but allows to use operator instead of method call, like:  
               cp << "my_strings,my_ints\n" << "hello,1\n" << "world,2\n";  */ 
   CSV_Parser & operator << (const char *s);
+
+  /**  @brief Example:   
+              cp << String(5) + "," + String(6) + "\n";   */ 
+  CSV_Parser & operator << (String s);
   
   /**  @brief Example:   
               cp << 'a' << ',' << 'b';   */ 
   CSV_Parser & operator << (char c);
+
+  /**  @brief This handler converts all types (not covered in other "<<" operator handlers) to String. For example it will handle:   
+              cp << 5;
+              cp << 5.5f;
+              cp << 5L;
+              cp << 0b11111111     */ 
+  template<typename T>
+  CSV_Parser & operator << (T t){
+      supplyChunk(String(t).c_str());
+      return *this;
+  };
 
   /** @brief Forces the previously supplied (but not parsed) chunks to be parsed despite not ending with "\n" or "\r\n" or delimiter.  
              This function should be called after full csv string is supplied with repetitive supplyChunk method calls.  
