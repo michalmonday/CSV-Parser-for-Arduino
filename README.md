@@ -12,7 +12,9 @@
 * [Custom delimiter](#custom-delimiter)  
 * [Custom quote character](#custom-quote-character)  
 * [Checking if the file was parsed correctly](#checking-if-the-file-was-parsed-correctly)  
-* [Troubleshooting](#troubleshooting)  
+* [Troubleshooting](#troubleshooting)   
+    * Platformio and SD library issue  
+    * `cp << file.read()` requiring `(char)` cast (potential issue from version 1.0.0, which may break old code)    
 * [Motivation](#motivation)  
 * [Documentation](#documentation)  
 
@@ -148,17 +150,6 @@ cp << ",";
 cp << String(102) + ",103\n";
 ```
 Floats can be supplied as well. In general, any types can be supplied, the principle is: if the type isn't "String", "char \*" or "char", then the String(supplied_value) will be appended (before being parsed and stored as a type specified in the format string).   
-
-**Important**  
-Arduino built-in File.read() method returns an integer (instead of a char). Therefore, it's important to cast its return before supplying it to CSV_Parser object, like:  
-```cpp
-File csv_file = SD.open(f_name); // or FFat.open(f_name);
-while (csv_file.available()) {
-    cp << (char)csv_file.read();
-}
-```
-Without `(char)`, the string representation of ascii number would be stored.  
-Before the 1.0.0 version, the `cp << 97;` expression would append letter 'a' (because '97' stands for 'a' in ascii table). From 1.0.0 version onwards, the `cp << 97;` is equivalent to `cp << String(97);`, it will append '97' instead of 'a'. That is correct behaviour in my opinion, however due to design of Arduino built-in "File.read()" method, which returns an integer, it is necessary to cast it's return (with `(char)csv_file.read()` as shown above), and problems may occur if some existing code (using this library) doesn't explicitly cast it.  
 
 
 ## Examples
@@ -337,12 +328,25 @@ It will display parsed header fields, their types and all the parsed values. Lik
 
 ## Troubleshooting  
 
+#### Platformio and SD library issue  
 Platformio users reported compilation issues due to SD library import by the CSV_Parser.cpp file. Since 0.2.1 version of this library, the SD import can be disabled by placing `#define CSV_PARSER_DONT_IMPORT_SD` above (it won't work if it's below) the CSV_Parser library import like this:  
 
 ```cpp
 #define CSV_PARSER_DONT_IMPORT_SD
 #include <CSV_Parser.h>
 ```
+
+#### `cp << file.read();` requiring a `(char)` cast  (potential issue from version 1.0.0, which may break old code)  
+Arduino built-in File.read() method returns an integer (instead of a char). Therefore, it's important to cast its return before supplying it to CSV_Parser object, like:  
+```cpp
+File csv_file = SD.open(f_name); // or FFat.open(f_name);
+while (csv_file.available()) {
+    cp << (char)csv_file.read();
+}
+```
+Without `(char)`, the string representation of ascii number would be stored.  
+Before the 1.0.0 version, the `cp << 97;` expression would append letter 'a' (because '97' stands for 'a' in ascii table). From 1.0.0 version onwards, the `cp << 97;` is equivalent to `cp << String(97);`, it will append '97' instead of 'a'. That is correct behaviour in my opinion, however due to design of Arduino built-in "File.read()" method, which returns an integer, it is necessary to cast it's return (with `(char)csv_file.read()` as shown above), and problems may occur if some existing code (using this library) doesn't explicitly cast it.  
+
   
 ## Motivation
 I wanted to parse [covid-19 csv](https://github.com/tomwhite/covid-19-uk-data) data and couldn't find any csv parser for Arduino. So instead of rushing with a quick/dirty solution, I decided to write something that could be reused in the future (possibly by other people too).  
