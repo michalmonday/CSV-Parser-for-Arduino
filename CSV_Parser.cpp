@@ -175,7 +175,7 @@ char * CSV_Parser::parseStringValue(const char * s, int * chars_occupied) {
   bool ending_quote_found = false;
   while (char *next_quote = strchr(s, quote_char)) {
     if (*(next_quote+1) == quote_char) {
-  	  s += 2;
+  	  s = next_quote+2;
   	  len--;
   	  continue;
   	}
@@ -184,7 +184,7 @@ char * CSV_Parser::parseStringValue(const char * s, int * chars_occupied) {
   	*chars_occupied += next_quote - base;
   	len += next_quote - base;
   	
-  	if ((*(next_quote+1) == ','))
+  	if ((*(next_quote+1) == delimiter))
   		*chars_occupied += 1;
   	else
   		*chars_occupied += strspn(next_quote + 1, "\r\n");
