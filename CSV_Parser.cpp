@@ -116,12 +116,30 @@ char __attribute__((weak)) feedRowParser() { return '-'; }
 extern bool __attribute__((weak)) rowParserFinished();
 bool __attribute__((weak)) rowParserFinished() { return true; }
 // both functions above must be defined by the user, weak attribute is to avoid compilation
-// fail if the user doesn't define them
+// fail if the user doesn't define them (because not every user will use parseRow() method)
 
 bool CSV_Parser::parseRow() {
+  // parseRow() should never be used together with the original way of parsing csv 
+  // (by "original way of parsing" I mean: by using "cp <<" operator or by supplying whole csv at once)
+  // parseRow() requires feedRowParser() and rowParserFinished() to be defined by the user
+  // It then allows to read the first row in the same way as default parsing way, like:
+  // while (cp.parseRow()) { 
+  //    char *str = ((char**)cp["my_strings"])[0];
+  // }
+
   if (rowParserFinished()) 
     return false;
-  rows_count = 0;
+
+  // It is necessary to deallocate memory for previously saved strings 
+  // (because strdup is used for saving strings which allocates new memory)
+  if (rows_count > 0) {
+    for (int col = 0; col < cols_count; col++) {
+      if (fmt[col] == 's')
+        free(((char**)values[col])[0]); // 0 stands for the first row, the use of parseRow implies that only 1 row is parsed at a time
+    }
+    rows_count = 0;
+  }
+
   while (!rowParserFinished() && rows_count == 0)
     *this << feedRowParser();
   // thanks to the line below the csv could end without '\n' and the last value 
