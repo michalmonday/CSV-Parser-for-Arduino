@@ -11,7 +11,7 @@
     * Headerless files
     * Custom delimiter
     * Custom quote character
-    * Parsing row at a time
+    * Parsing one row at a time
 * [Troubleshooting](#troubleshooting)   
     * Checking if the file was parsed correctly
     * Platformio and SD library issue  
@@ -290,9 +290,9 @@ Quote character is 5th parameter of the constructor. It's double quote (") by de
 CSV_Parser cp(csv_str, /*format*/ "sLdcfxs", /*has_header*/ true, /*delimiter*/ ',', /*quote_char*/ "'");
 ```
 
-### Parsing row at a time
+### Parsing one row at a time
 Large files often can't be stored in the limited memory of microcontrollers. For that reason it's possible to parse the file row by row.
-See the [parsing_row_by_row.ino](./examples/parsing_row_by_row/parsing_row_by_row.ino) example for more information. When deciding to parse row by row, it is suggested to not combine it with the default way of parsing. Please note that during row by row parsing the `cp.getRowsCount()` method will return 0 or 1 instead of the total number of previously parsed rows.
+See the [parsing_row_by_row.ino](./examples/parsing_row_by_row/parsing_row_by_row.ino) and [parsing_row_by_row_sd_card.ino](./examples/parsing_row_by_row_sd_card/parsing_row_by_row_sd_card.ino) examples for more information. When deciding to parse row by row, it is suggested to not combine it with the default way of parsing (using the same object). Please note that during row by row parsing the `cp.getRowsCount()` method will return 0 or 1 instead of the total number of previously parsed rows. In case of parsing one row at a time the integer-based indexing of `cp` object should be done (for efficiency and because the header is parsed after the first `parseRow()` call so string-based indexing can't really be used before the first `parseRow()` call), see examples for more details.
 
 
 ## Troubleshooting  
