@@ -77,16 +77,24 @@ void setup() {
   CSV_Parser cp(/*format*/ "sL");
 
   Serial.println("Accessing values by column name:");
+  
+  // WARNING: String indexing can't be used here because the header was not supplied to the cp object yet.
+  // char **strings = (char**)cp["my_strings"];
+  // int32_t *numbers = (int32_t*)cp["my_numbers"];
+
+  char **strings = (char**)cp[0];
+  int32_t *numbers = (int32_t*)cp[1];
 
   // parseRow calls feedRowParser() continuously until it reads a 
   // full row or until the rowParserFinished() returns true
   int row_index = 0;
   while (cp.parseRow()) {
-    char *string = ((char**)cp["my_strings"])[0];
-    int32_t number = ((int32_t*)cp["my_numbers"])[0];
+    // Here we could use string indexing but it would be much slower.
+    // char *string = ((char**)cp["my_strings"])[0];
+    // int32_t number = ((int32_t*)cp["my_numbers"])[0];
     
-//    char *string = ((char**)cp[0])[0];
-//    int32_t number = ((int32_t*)cp[1])[0];
+    char *string = strings[0];
+    int32_t number = numbers[0];
 
     Serial.print(String(row_index) + ". String = ");
     Serial.println(string);
