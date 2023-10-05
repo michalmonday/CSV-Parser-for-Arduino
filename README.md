@@ -11,6 +11,7 @@
     * Headerless files
     * Custom delimiter
     * Custom quote character
+    * Parsing row at a time
 * [Troubleshooting](#troubleshooting)   
     * Checking if the file was parsed correctly
     * Platformio and SD library issue  
@@ -288,6 +289,10 @@ Quote character is 5th parameter of the constructor. It's double quote (") by de
 ```cpp 
 CSV_Parser cp(csv_str, /*format*/ "sLdcfxs", /*has_header*/ true, /*delimiter*/ ',', /*quote_char*/ "'");
 ```
+
+### Parsing row at a time
+Large files often can't be stored in the limited memory of microcontrollers. For that reason it's possible to parse the file row by row.
+See the [parsing_row_by_row.ino](./examples/parsing_row_by_row/parsing_row_by_row.ino) example for more information. When deciding to parse row by row, it is suggested to not combine it with the default way of parsing. Please note that during row by row parsing the `cp.getRowsCount()` method will return 0 or 1 instead of the total number of previously parsed rows.
 
 
 ## Troubleshooting  

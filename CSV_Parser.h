@@ -120,6 +120,11 @@ public:
 #ifndef CSV_PARSER_DONT_IMPORT_SD
   bool readSDfile(const char *f_name);
 #endif
+
+  /** @brief Reads a single row provided by the user-defined functions: feedRowParser (returns char to be supplied) and rowParserFinished (returns whether all rows were parsed)
+      @return true if row was parsed, false if not (e.g. if rowParserFinished() returned true) 
+     */
+  bool parseRow();
   
   int getColumnsCount();
   

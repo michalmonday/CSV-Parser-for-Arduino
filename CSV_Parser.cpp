@@ -109,6 +109,28 @@ CSV_Parser::~CSV_Parser() {
   free(is_fmt_unsigned);
 }
 
+// external function declaration for feeding characters to parser it must return a char
+extern char __attribute__((weak)) feedRowParser();
+char __attribute__((weak)) feedRowParser() { return '-'; }
+// external function declaration for checking if row parser finished parsing
+extern bool __attribute__((weak)) rowParserFinished();
+bool __attribute__((weak)) rowParserFinished() { return true; }
+// both functions above must be defined by the user, weak attribute is to avoid compilation
+// fail if the user doesn't define them
+
+bool CSV_Parser::parseRow() {
+  if (rowParserFinished()) 
+    return false;
+  rows_count = 0;
+  while (!rowParserFinished() && rows_count == 0)
+    *this << feedRowParser();
+  // thanks to the line below the csv could end without '\n' and the last value 
+  // would still be parsed if the rowParserFinished() returns true
+  if (rowParserFinished())
+    parseLeftover();
+  return rows_count > 0;
+}
+
 #ifndef CSV_PARSER_DONT_IMPORT_SD
 bool CSV_Parser::readSDfile(const char *f_name) {
   // open the file. note that only one file can be open at a time,
