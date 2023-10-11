@@ -97,7 +97,7 @@ Notice how each character within `"sLdcfx-"` string specifies different type for
 ![image didnt load](./images/format_string.png)  
 
 **Is it necessary to supply the whole string at once?**   
-No, it may be supplied in incomplete parts as shown in [this example](https://github.com/michalmonday/CSV-Parser-for-Arduino/blob/master/examples/supplying_csv_by_incomplete_parts/supplying_csv_by_incomplete_parts.ino).   
+No, it may be supplied in incomplete parts as shown in [this example](./examples/supplying_csv_by_incomplete_parts/supplying_csv_by_incomplete_parts.ino).   
 ```cpp
 /*   "sL" means "string" (char* type) and "Long" (int32_t type)  */
   CSV_Parser cp(/*format*/ "sL");
@@ -156,11 +156,13 @@ Floats can be supplied as well. In general, any types can be supplied, the princ
 
 ### Examples
 Examples directory shows:  
-* [basic usage](https://github.com/michalmonday/CSV-Parser-for-Arduino/tree/master/examples/basic_usage)  
-* [how to handle unsigned types](https://github.com/michalmonday/CSV-Parser-for-Arduino/tree/master/examples/unsigned_values)   
-* [how to supply csv by incomplete parts](https://github.com/michalmonday/CSV-Parser-for-Arduino/tree/master/examples/supplying_csv_by_incomplete_parts)   
-* [how to read csv file from a PC (using provided python script)](https://github.com/michalmonday/CSV-Parser-for-Arduino/tree/master/examples/reading_from_computer_python)  
-* [how to read csv file from SD card](https://github.com/michalmonday/CSV-Parser-for-Arduino/tree/master/examples/reading_from_sd_card)   
+* [basic usage](./examples/basic_usage)  
+* [how to handle unsigned types](./examples/unsigned_values)   
+* [how to supply csv by incomplete parts](./examples/supplying_csv_by_incomplete_parts)   
+* [how to read csv file from a PC](./examples/reading_from_computer_python) (using provided python script)  
+* [how to read csv file from SD card](./examples/reading_from_sd_card)   
+* [how to parse row by row](./examples/parsing_row_by_row/parsing_row_by_row.ino) (useful for large csv files)  
+* [how to parse row by row from SD card](./examples/parsing_row_by_row_sd_card/parsing_row_by_row_sd_card.ino) (useful for large csv files)   
 
 
 
@@ -258,7 +260,7 @@ char * csv_str = "column_1,column_2\n"
 CSV_Parser cp(csv_str, /*format*/ "ucuc");
 ``` 
 
-See [unsigned_values example](https://github.com/michalmonday/CSV-Parser-for-Arduino/blob/master/examples/unsigned_values/unsigned_values.ino) for more info.  
+See [unsigned_values example](./examples/unsigned_values/unsigned_values.ino) for more info.  
 
 ## Customization
   
