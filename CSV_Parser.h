@@ -58,7 +58,7 @@ class CSV_Parser {
 
   /*  Members responsible for keeping track of chunked supply of csv string.  */
   char * leftover;        // string that wasn't parsed yet because it doesn't end with delimiter or new line
-  uint16_t current_col;
+  int current_col;
   bool header_parsed;
 
   /*  Private methods  */

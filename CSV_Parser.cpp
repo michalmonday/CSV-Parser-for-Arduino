@@ -69,16 +69,16 @@ void CSV_Parser::AssignIsFmtUnsignedArray(const char * fmt_) {
 
 CSV_Parser::CSV_Parser(const char * s, const char * fmt_, bool has_header_, char delimiter_, char quote_char_) :
   fmt( strdup_ignoring_u(fmt_) ),
-  rows_count(NULL), 
+  rows_count(0), 
   cols_count( strlen_ignoring_u(fmt_) ),
   has_header(has_header_),
   delimiter(delimiter_),
   quote_char(quote_char_),
-  delim_chars({'\r', '\n', delimiter_, 0}),
+  delim_chars{'\r', '\n', delimiter_, 0},
   whole_csv_supplied(false),
   //whole_csv_supplied((bool)s ? true : false), // in constructor where whole csv is not supplied at once it should be set to false
-  leftover(NULL),
-  current_col(NULL),
+  leftover(0),
+  current_col(0),
   header_parsed(!has_header_)
 {  
   AssignIsFmtUnsignedArray(fmt_);
@@ -439,7 +439,7 @@ void CSV_Parser::supplyChunk(const char *s) {
 
   int chars_occupied = 0;
   char * val = 0;
-  while (val = parseStringValue(s, &chars_occupied)) {
+  while ((val = parseStringValue(s, &chars_occupied))) {
     //debug_serial->println("rows_count = " + String(rows_count) + ", current_col = " + String(current_col) + ", val = " + String(val));
     if (fmt[current_col] != '-') {
       if (!header_parsed) {
