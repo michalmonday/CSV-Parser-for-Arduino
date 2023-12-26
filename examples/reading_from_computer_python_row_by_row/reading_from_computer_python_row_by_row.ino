@@ -60,48 +60,49 @@ Note: I suggest to close Serial Monitor window (if it's open) before running the
       otherwise the port may be busy.
 */
 
-int read_serial(char *dst, int timeout, bool blocking) {
-  int recv_count = 0;
-  if (blocking) {
-    while(!Serial.available()) {}
-  }
-  unsigned long last_char_time = millis();
-  while(millis() - last_char_time  < timeout) {
-    if(Serial.available()) {
-      dst[recv_count++] = Serial.read();
-      last_char_time = millis();
+unsigned long last_start_time = 0;
+bool all_file_received = false;
+const int TIMEOUT = 1000; // 1 second
+char feedRowParser() {
+  // wait indefinitely but only if no characters were received yet
+  // (if some characters were received, then wait for the TIMEOUT period)
+  while (!Serial.available() && last_start_time == 0);
+
+  while (!Serial.available() && last_start_time) {
+    if (millis() - last_start_time > TIMEOUT) {
+      all_file_received = true;
+      return '\n';
     }
   }
-  dst[recv_count] = '\0';
-  return recv_count;
+  char c = Serial.read();
+  return c;
+
 }
+
+bool rowParserFinished() {
+  return all_file_received;
+}
+ 
 
 void setup() {
   Serial.begin(115200);
   // CSV_Parser cp(/*format*/ "sfccccccccccc");
   CSV_Parser cp(/*format*/    "sf-----------");
 
-  char buffer[400];
-
-  int count = read_serial(buffer, 1000, /*blocking*/ true); // wait for the python script to send the file
-
-  cp << buffer; 
-
-  cp.parseLeftover(); // just in case if the csv file doesn't end with "\n"
-
   // get "Month" and "Average" columns
-  char **months = (char**)cp["Month"];
-  float *averages = (float*)cp["Average"];
+  char **months = (char**)cp[0];
+  float *averages = (float*)cp[1];
 
   // Send "Month" and "Average" columns back to the PC 
   // (python script will read and print them in console window)
-  for(int row = 0; row < cp.getRowsCount(); row++) {
-    Serial.print(row, DEC);
+  int i = 0;
+  while(cp.parseRow()) {
+    Serial.print(i, DEC);
     Serial.print(". month = ");
-    Serial.println(months[row]);
-    Serial.print(row, DEC);
+    Serial.println(months[0]);
+    Serial.print(i, DEC);
     Serial.print(". average = ");
-    Serial.println(String(averages[row]));
+    Serial.println(String(averages[0]));
   }
   Serial.println();
 
