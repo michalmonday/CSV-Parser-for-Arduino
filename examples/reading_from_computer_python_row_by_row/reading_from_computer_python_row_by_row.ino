@@ -60,9 +60,11 @@ Note: I suggest to close Serial Monitor window (if it's open) before running the
       otherwise the port may be busy.
 */
 
+
 unsigned long last_start_time = 0;
 bool all_file_received = false;
 const int TIMEOUT = 1000; // 1 second
+// This function is responsible for supplying characters to be parsed.
 char feedRowParser() {
   // wait indefinitely but only if no characters were received yet
   // (if some characters were received, then wait for the TIMEOUT period)
@@ -79,6 +81,9 @@ char feedRowParser() {
 
 }
 
+// This function must return true when the whole CSV file was supplied 
+// to feedRowParser() function. It will make sure that cp.parseRow() 
+// returns false when the end of CSV was reached.
 bool rowParserFinished() {
   return all_file_received;
 }

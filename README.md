@@ -160,7 +160,10 @@ Examples directory shows:
 * [how to handle unsigned types](https://github.com/michalmonday/CSV-Parser-for-Arduino/tree/master/examples/unsigned_values)   
 * [how to supply csv by incomplete parts](https://github.com/michalmonday/CSV-Parser-for-Arduino/tree/master/examples/supplying_csv_by_incomplete_parts)   
 * [how to read csv file from a PC (using provided python script)](https://github.com/michalmonday/CSV-Parser-for-Arduino/tree/master/examples/reading_from_computer_python)  
+* [how to read csv file from a PC row by row (using provided python script, without storing the whole csv in memory)](./examples/reading_from_computer_python_row_by_row)
 * [how to read csv file from SD card](https://github.com/michalmonday/CSV-Parser-for-Arduino/tree/master/examples/reading_from_sd_card)   
+* [how to parse csv row by row (without storing the whole csv in memory)](./examples/parsing_row_by_row/)
+* [how to parse csv row by row from SD card (without storing the whole csv in memory)](./examples/parsing_row_by_row_sd_card/)
 
 
 
