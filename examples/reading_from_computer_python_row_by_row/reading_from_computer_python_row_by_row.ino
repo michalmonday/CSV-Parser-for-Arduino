@@ -89,7 +89,7 @@ void setup() {
   // CSV_Parser cp(/*format*/ "sfccccccccccc");
   CSV_Parser cp(/*format*/    "sf-----------");
 
-  // get "Month" and "Average" columns
+  // get "Month" and "Average" columns (must be accessed by index because the header was not supplied to the cp object yet)
   char **months = (char**)cp[0];
   float *averages = (float*)cp[1];
 
