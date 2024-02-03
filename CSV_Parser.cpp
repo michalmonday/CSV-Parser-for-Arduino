@@ -8,7 +8,7 @@
 
 //#include "mem_check.h" // COMMENT-OUT BEFORE UPLOAD
 
-//Stream * CSV_Parser::debug_serial = &Serial;
+// Stream * CSV_Parser::debug_serial = &Serial;
 
 /*  Helper function useful for handling unsigned format specifiers.   */
 char * CSV_Parser::strdup_ignoring_u(const char *s) {
@@ -189,25 +189,26 @@ char * CSV_Parser::parseStringValue(const char * s, int * chars_occupied) {
   if(*s != quote_char) {
     char * first_delim = strpbrk(s, delim_chars);
     int val_len = 0;
-    if (first_delim || whole_csv_supplied) {
-      if (first_delim) {
-        val_len = first_delim - s;
-        *chars_occupied = val_len + (*first_delim == delimiter) + strspn(first_delim, "\r\n");
-      }
-      else {
-        val_len = strlen(s);
-        *chars_occupied = val_len;
-      }
-        
-    	//return strndup(s, *chars_occupied); // available for Esp8266 but not for Arduino :(
-      char *str = (char*)malloc(val_len + 1);
-    	memcpy(str, s, val_len);
-    	str[val_len] = 0;
-      return str;
+    if (!first_delim && !whole_csv_supplied) {
+      // delim_chars not found in string
+      *chars_occupied = 0;
+      return 0;
     }
-    // delim_chars not found in string
-    *chars_occupied = 0;
-    return 0;
+
+    if (first_delim) {
+      val_len = first_delim - s;
+      *chars_occupied = val_len + (*first_delim == delimiter) + strspn(first_delim, "\r\n");
+    }
+    else {
+      val_len = strlen(s);
+      *chars_occupied = val_len;
+    }
+      
+    //return strndup(s, *chars_occupied); // available for Esp8266 but not for Arduino :(
+    char *str = (char*)malloc(val_len + 1);
+    memcpy(str, s, val_len);
+    str[val_len] = 0;
+    return str;
   }
 
   /*  If value is enclosed in double quotes. Being enclosed in double quotes automatically 
@@ -224,6 +225,12 @@ char * CSV_Parser::parseStringValue(const char * s, int * chars_occupied) {
   	  len--;
   	  continue;
   	}
+    // only assume the current quote is the ending quote if the next character is a delimiter or a new line
+    // WARNING: parseLeftover does not need such condition, "whole_csv_supplied" can be used to check if parseLeftover was used
+    if (!whole_csv_supplied && !strpbrk(next_quote + 1, delim_chars)) {
+      s = next_quote + 1;
+      continue;
+    }
     ending_quote_found = true;
   	
   	*chars_occupied += next_quote - base;
@@ -417,21 +424,21 @@ void CSV_Parser::supplyChunk(const char *s) {
   if (leftover) {
     int leftover_len = strlen(leftover);
 	
-	// If there's no leftover and first supplied char is '\n' then it could be the case that the last char was "\r",
-	// so '\n' should be ignored.
-	// The same applies to situation where " (quote char) was previously received and the supplied char is '\r'
-	if (leftover_len == 0 && ignore_next_delimchar && (*s == '\n' || *s == '\r' || *s == delimiter)) {
-		if(*s != '\r')
-			ignore_next_delimchar = false;
-		s++;
-	}
-	
+    // If there's no leftover and first supplied char is '\n' then it could be the case that the last char was "\r",
+    // so '\n' should be ignored.
+    // The same applies to situation where " (quote char) was previously received and the supplied char is '\r'
+    if (leftover_len == 0 && ignore_next_delimchar && (*s == '\n' || *s == '\r' || *s == delimiter)) {
+      if(*s != '\r')
+        ignore_next_delimchar = false;
+      s++;
+    }
+    
     int s_len = strlen(s);
     //debug_serial->println("leftover_len = " + String(leftover_len) + ", s_len = " + String(s_len));
     leftover = (char*)realloc(leftover, leftover_len + s_len + 1);
 	
-	//if (!leftover) 
-	//	debug_serial->println("leftover realloc failed");
+    //if (!leftover) 
+    //	debug_serial->println("leftover realloc failed");
     strcat(leftover, s);
     s = leftover;
     //debug_serial->println("merged leftover = " + String(leftover));
@@ -440,7 +447,7 @@ void CSV_Parser::supplyChunk(const char *s) {
   int chars_occupied = 0;
   char * val = 0;
   while ((val = parseStringValue(s, &chars_occupied))) {
-    //debug_serial->println("rows_count = " + String(rows_count) + ", current_col = " + String(current_col) + ", val = " + String(val));
+    // debug_serial->println("rows_count = " + String(rows_count) + ", current_col = " + String(current_col) + ", val = " + String(val));
     if (fmt[current_col] != '-') {
       if (!header_parsed) {
         keys[current_col] = strdup_trimmed(val);
