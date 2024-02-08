@@ -1,1 +1,5 @@
 documentation_config.txt
+*.exe
+**/*.exe
+*.o
+**/*.o

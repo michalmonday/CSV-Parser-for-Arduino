@@ -20,6 +20,9 @@ setDebugSerial	KEYWORD2
 parseLeftover	KEYWORD2
 readSDfile	KEYWORD2
 parseRow	KEYWORD2
+setFeedRowParserCallback	KEYWORD2
+setFeedRowParserStrCallback	KEYWORD2
+setRowParserFinishedCallback	KEYWORD2
 
 ######################################
 # Constants (LITERAL1)

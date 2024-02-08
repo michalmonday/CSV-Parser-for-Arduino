@@ -23,7 +23,14 @@
 #ifndef CSV_PARSER_H
 #define CSV_PARSER_H
 
-#include <Arduino.h>
+#ifndef NON_ARDUINO
+  #include <Arduino.h>
+#else 
+  #include <non_arduino_adaptations.h>
+    extern SerialClass Serial;
+#endif
+
+#include <functional>
 
 class CSV_Parser {
   char ** keys;
@@ -60,6 +67,10 @@ class CSV_Parser {
   char * leftover;        // string that wasn't parsed yet because it doesn't end with delimiter or new line
   int current_col;
   bool header_parsed;
+
+  std::function<char()> feedRowParser_callback;
+  std::function<char*()> feedRowParserStr_callback;
+  std::function<bool()> rowParserFinished_callback;
 
   /*  Private methods  */
   char * parseStringValue(const char *, int * chars_occupied);
@@ -192,12 +203,17 @@ public:
              If the csv string did not end with "\n" or "\r\n" then endChunks() must be called, otherwise the last row won't be returned when using "GetValues".  */
   void parseLeftover();
 
+  void setFeedRowParserCallback(std::function<char()> feedRowParser_callback);
+  void setFeedRowParserStrCallback(std::function<char*()> feedRowParserStr_callback);
+  void setRowParserFinishedCallback(std::function<bool()> rowParserFinished_callback);
+
   /**  @brief If invalid parameters are supplied to this class, then debug serial is used to output error information.   
 	   This function is static, which means that it supposed to be called like:  
 	   CSV_Parser::SetDebugSerial(stream_object);  
 	   @param ser - Stream object like "Serial" (by default), "Serial1" or an object of
 					"SoftwareSerial.h" library. */
   //static void setDebugSerial(Stream &ser) { debug_serial = &ser; }
+
 };
 
 

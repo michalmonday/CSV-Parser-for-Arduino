@@ -6,6 +6,25 @@
     #include <SD.h>
 #endif
 
+#ifdef NON_ARDUINO
+    #include <stdlib.h>
+    #include <string.h>
+    #include <string>
+    #include <stdio.h>
+    #include <ctype.h>
+#endif
+
+// external function declaration for feeding characters to parser it must return a char
+extern char __attribute__((weak)) feedRowParser();
+char __attribute__((weak)) feedRowParser() { return '-'; }
+extern char* __attribute__((weak)) feedRowParserStr();
+char *__attribute__((weak)) feedRowParserStr() { return 0; }
+// external function declaration for checking if row parser finished parsing
+extern bool __attribute__((weak)) rowParserFinished();
+bool __attribute__((weak)) rowParserFinished() { return true; }
+// both functions above must be defined by the user, weak attribute is to avoid compilation
+// fail if the user doesn't define them (because not every user will use parseRow() method)
+
 //#include "mem_check.h" // COMMENT-OUT BEFORE UPLOAD
 
 // Stream * CSV_Parser::debug_serial = &Serial;
@@ -79,7 +98,10 @@ CSV_Parser::CSV_Parser(const char * s, const char * fmt_, bool has_header_, char
   //whole_csv_supplied((bool)s ? true : false), // in constructor where whole csv is not supplied at once it should be set to false
   leftover(0),
   current_col(0),
-  header_parsed(!has_header_)
+  header_parsed(!has_header_),
+  feedRowParser_callback(feedRowParser),
+  feedRowParserStr_callback(feedRowParserStr),
+  rowParserFinished_callback(rowParserFinished)
 {  
   AssignIsFmtUnsignedArray(fmt_);
   
@@ -112,15 +134,6 @@ CSV_Parser::~CSV_Parser() {
   free(is_fmt_unsigned);
 }
 
-// external function declaration for feeding characters to parser it must return a char
-extern char __attribute__((weak)) feedRowParser();
-char __attribute__((weak)) feedRowParser() { return '-'; }
-// external function declaration for checking if row parser finished parsing
-extern bool __attribute__((weak)) rowParserFinished();
-bool __attribute__((weak)) rowParserFinished() { return true; }
-// both functions above must be defined by the user, weak attribute is to avoid compilation
-// fail if the user doesn't define them (because not every user will use parseRow() method)
-
 bool CSV_Parser::parseRow() {
   // parseRow() should never be used together with the original way of parsing csv 
   // (by "original way of parsing" I mean: by using "cp <<" operator or by supplying whole csv at once)
@@ -132,7 +145,7 @@ bool CSV_Parser::parseRow() {
   //        char *str = strings[0];
   //     }
 
-  if (rowParserFinished()) 
+  if (rowParserFinished_callback()) 
     return false;
 
   // It is necessary to deallocate memory for previously saved strings 
@@ -145,11 +158,19 @@ bool CSV_Parser::parseRow() {
     rows_count = 0;
   }
 
-  while (!rowParserFinished() && rows_count == 0)
-    *this << feedRowParser();
+  while (!rowParserFinished_callback() && rows_count == 0) {
+    char c = feedRowParser_callback();
+    if (c) {
+       *this << c;
+    }
+    char *str = feedRowParserStr_callback();
+    if (str) {
+       *this << str;
+    }
+  }
   // thanks to the line below the csv could end without '\n' and the last value 
   // would still be parsed if the rowParserFinished() returns true
-  if (rowParserFinished())
+  if (rowParserFinished_callback())
     parseLeftover();
   return rows_count > 0;
 }
@@ -327,11 +348,16 @@ void CSV_Parser::saveNewValue(const char * val, char type_specifier, int row, in
   }
 }
 
-
 void CSV_Parser::printKeys(Stream &ser) {
+  #ifndef NON_ARDUINO
   ser.println("Keys:");
   for (int col = 0; col < cols_count; col++) 
     ser.println(String(col) + ". Key = " + String(keys[col] ? keys[col] : "unused"));
+  #else 
+    printf("Keys:\n");
+  for (int col = 0; col < cols_count; col++)
+    printf("%d. Key = %s\n", col, keys[col] ? keys[col] : "unused");
+  #endif
 }
 
 int CSV_Parser::getColumnsCount() { return cols_count; }
@@ -347,7 +373,6 @@ void * CSV_Parser::operator [] (const char *key) {
 
 /*  Get values pointer given column index (0 being the first column)  */
 void * CSV_Parser::operator [] (int index) { return index < cols_count ? values[index] : (void*)0; }
-
 
 /*  Prints column names, their types and all stored values.  */
 void CSV_Parser::print(Stream &ser) {
@@ -413,8 +438,6 @@ void CSV_Parser::print(Stream &ser) {
   ser.print("sizeof(CSV_Parser) = ");
   ser.println(sizeof(CSV_Parser), DEC);
 }
-
-
 
 void CSV_Parser::supplyChunk(const char *s) {
   whole_csv_supplied = false;
@@ -526,4 +549,14 @@ void CSV_Parser::parseLeftover() {
     free(leftover);
     leftover = 0;
   }
+}
+
+void CSV_Parser::setFeedRowParserCallback(std::function<char()> func) {
+  this->feedRowParser_callback = func;
+}
+void CSV_Parser::setFeedRowParserStrCallback(std::function<char*()> func) {
+  this->feedRowParserStr_callback = func;
+}
+void CSV_Parser::setRowParserFinishedCallback(std::function<bool()> func) {
+  this->rowParserFinished_callback = func;
 }
