@@ -30,7 +30,9 @@
     extern SerialClass Serial;
 #endif
 
-#include <functional>
+typedef char (*FeedRowParserCallback)();
+typedef char* (*FeedRowParserStrCallback)();
+typedef bool (*RowParserFinishedCallback)();
 
 class CSV_Parser {
   char ** keys;
@@ -68,9 +70,13 @@ class CSV_Parser {
   int current_col;
   bool header_parsed;
 
-  std::function<char()> feedRowParser_callback;
-  std::function<char*()> feedRowParserStr_callback;
-  std::function<bool()> rowParserFinished_callback;
+  // std::function<char()> feedRowParser_callback;
+  // std::function<char*()> feedRowParserStr_callback;
+  // std::function<bool()> rowParserFinished_callback;
+
+  FeedRowParserCallback feedRowParser_callback;
+  FeedRowParserStrCallback feedRowParserStr_callback;
+  RowParserFinishedCallback rowParserFinished_callback;
 
   /*  Private methods  */
   char * parseStringValue(const char *, int * chars_occupied);
@@ -203,9 +209,13 @@ public:
              If the csv string did not end with "\n" or "\r\n" then endChunks() must be called, otherwise the last row won't be returned when using "GetValues".  */
   void parseLeftover();
 
-  void setFeedRowParserCallback(std::function<char()> feedRowParser_callback);
-  void setFeedRowParserStrCallback(std::function<char*()> feedRowParserStr_callback);
-  void setRowParserFinishedCallback(std::function<bool()> rowParserFinished_callback);
+  // void setFeedRowParserCallback(std::function<char()> feedRowParser_callback);
+  // void setFeedRowParserStrCallback(std::function<char*()> feedRowParserStr_callback);
+  // void setRowParserFinishedCallback(std::function<bool()> rowParserFinished_callback);
+
+  void setFeedRowParserCallback(FeedRowParserCallback feedRowParser_callback);
+  void setFeedRowParserStrCallback(FeedRowParserStrCallback feedRowParserStr_callback);
+  void setRowParserFinishedCallback(RowParserFinishedCallback rowParserFinished_callback);
 
   /**  @brief If invalid parameters are supplied to this class, then debug serial is used to output error information.   
 	   This function is static, which means that it supposed to be called like:  

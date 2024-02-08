@@ -551,12 +551,24 @@ void CSV_Parser::parseLeftover() {
   }
 }
 
-void CSV_Parser::setFeedRowParserCallback(std::function<char()> func) {
+// void CSV_Parser::setFeedRowParserCallback(std::function<char()> func) {
+//   this->feedRowParser_callback = func;
+// }
+// void CSV_Parser::setFeedRowParserStrCallback(std::function<char*()> func) {
+//   this->feedRowParserStr_callback = func;
+// }
+// void CSV_Parser::setRowParserFinishedCallback(std::function<bool()> func) {
+//   this->rowParserFinished_callback = func;
+// }
+
+void CSV_Parser::setFeedRowParserCallback(FeedRowParserCallback func) {
   this->feedRowParser_callback = func;
 }
-void CSV_Parser::setFeedRowParserStrCallback(std::function<char*()> func) {
+
+void CSV_Parser::setFeedRowParserStrCallback(FeedRowParserStrCallback func) {
   this->feedRowParserStr_callback = func;
 }
-void CSV_Parser::setRowParserFinishedCallback(std::function<bool()> func) {
+
+void CSV_Parser::setRowParserFinishedCallback(RowParserFinishedCallback func) {
   this->rowParserFinished_callback = func;
 }
